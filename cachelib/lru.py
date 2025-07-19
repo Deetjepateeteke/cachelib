@@ -65,9 +65,6 @@ class LRUCache(BaseCache):
         # Store in cache
         self._cache[key] = node
 
-        # update cache.stats.size
-        self._stats._size = self.__len__()
-
         return node
 
     def _remove_node(self, node: Node) -> None:
@@ -78,8 +75,6 @@ class LRUCache(BaseCache):
 
         # Remove node from cache
         del self._cache[node.key]
-
-        self._stats._size = self.__len__()  # update cache.stats.size
 
     def _get_evict_node(self) -> Node:
         current_node = self._tail.prev

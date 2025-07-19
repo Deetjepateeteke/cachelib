@@ -78,8 +78,6 @@ class BaseCache(ABC):
 
         self.set_verbose(verbose)
 
-        self._stats._max_size = self._max_size
-
     @abstractmethod
     def _add_node(self,
                   key: Hashable,
@@ -323,7 +321,6 @@ class BaseCache(ABC):
                 self._head.next = self._tail
                 self._tail.prev = self._head
 
-                self._stats._size = 0
                 self._logger.debug("CLEAR CACHE")
             else:
                 raise self.read_only_error
@@ -518,8 +515,6 @@ class BaseCache(ABC):
 
                     self._logger.debug(f"EVICT key='{least_freq_node.key}' \
                                     due to max-size")
-
-                self._stats._max_size = self._max_size  # update cache.stats.max_size
             else:
                 raise self.read_only_error
 
@@ -607,6 +602,7 @@ class BaseCache(ABC):
         Returns:
             dict[str, Any]: The cache's stats.
         """
+        return self._stats._as_dict()
 
     def __contains__(self, key: Hashable) -> bool:
         """
@@ -782,19 +778,15 @@ class Stats:
         "_hits",
         "_misses",
         "_evictions",
-        "_size",
-        "_max_size",
         "_starttime"
     ]
 
-    def __init__(self, parent):
-        self._parent = parent
+    def __init__(self, parent: BaseCache):
+        self._parent: BaseCache = parent
 
         self._hits = 0
         self._misses = 0
         self._evictions = 0
-        self._size = 0
-        self._max_size = 0
         self._starttime = time.time()
 
     @property
@@ -815,11 +807,11 @@ class Stats:
 
     @property
     def size(self):
-        return self._size
+        return len(self._parent)
 
     @property
     def max_size(self):
-        return self._max_size
+        return self._parent._max_size
 
     @property
     def uptime(self):

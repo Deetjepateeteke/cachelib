@@ -68,9 +68,6 @@ class LFUCache(BaseCache):
         self._cache[key] = node
         self._lookup_freq[key] = 0
 
-        # update cache.stats.size
-        self._stats._size = self.__len__()
-
         return node
 
     def _remove_node(self, node: Node) -> None:
@@ -83,8 +80,6 @@ class LFUCache(BaseCache):
         # Remove node from cache
         del self._cache[node.key]
         del self._lookup_freq[node.key]
-
-        self._stats._size = self.__len__()  # update cache.stats.size
 
     def _get_evict_node(self) -> Node:
         sorted_freq = sorted(self._lookup_freq, key=lambda k: self._lookup_freq[k])
