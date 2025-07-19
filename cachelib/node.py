@@ -4,7 +4,7 @@
 node.py - Node class implementation
 
 This module provides a Node class with ttl-support that
-is used in linked lists.
+is used in LRUCache and LFUCache.
 
 Classes:
     Node: The main Node class
@@ -14,7 +14,7 @@ Author: Deetjepateeteke <https://github.com/Deetjepateeteke>
 
 from __future__ import annotations
 import time
-from typing import Any, Optional, Union
+from typing import Any, Hashable, Optional, Union, Self
 
 
 class Node:
@@ -32,24 +32,24 @@ class Node:
     __slots__ = ["key", "_value", "_ttl", "_expires_at", "prev", "next"]
 
     def __init__(self,
-                 key: Any,
+                 key: Hashable,
                  value: Any,
                  ttl: Optional[Union[int, float]] = None,
-                 prev: Optional[Node] = None,  # LRUCache.head.prev=None
-                 next: Optional[Node] = None  # LRUCache.tail.next=None
+                 prev: Optional[Self] = None,  # LRUCache.head.prev=None
+                 next: Optional[Self] = None  # LRUCache.tail.next=None
                  ):
-        self.key: Any = key
+        self.key: Hashable = key
         self._value: Any = value
 
         self._ttl: Optional[Union[int, float]] = None
-        self._expires_at: Optional[Union[int, float]] = None
+        self._expires_at: Optional[float] = None
 
         # Set self._ttl and self._expires_at
         # self.reset_expires_at() gets called when ttl is reassigned.
         self.ttl = ttl
 
-        self.prev: Optional[Node] = prev
-        self.next: Optional[Node] = next
+        self.prev: Optional[Self] = prev
+        self.next: Optional[Self] = next
 
     def is_expired(self) -> bool:
         """
@@ -60,7 +60,7 @@ class Node:
         """
         if self._expires_at is not None:
             return time.time() > self._expires_at
-        return False  # no ttl, never expired
+        return False  # no ttl, so never expired
 
     def reset_expires_at(self) -> None:
         """
@@ -100,11 +100,11 @@ class Node:
         """
         # Check if ttl is valid
         if ttl is not None:
-            if isinstance(ttl, (int, float)):
+            if type(ttl) in (int, float):
                 if ttl < 0:
-                    raise ValueError("Node.ttl must be non-negative or None.")
+                    raise ValueError("Node.ttl must be non-negative or None")
             else:
-                raise TypeError("Node.ttl must be of type: int, float or NoneType.")
+                raise TypeError("Node.ttl must be of type: int, float or NoneType")
 
         self._ttl = ttl
 
@@ -112,14 +112,14 @@ class Node:
         self.reset_expires_at()
 
     @property
-    def expires_at(self) -> float:
+    def expires_at(self) -> Optional[float]:
         return self._expires_at
 
     def __repr__(self) -> str:
         """
         Examples:
             >>> repr(Node)
-            Node(key='foo', value='bar', ttl=5s, prev='some_node', next='some_other_node')
+            NodeLRU(key='foo', value='bar', ttl=5s, prev='some_node', next='some_other_node')
         """
         return (
             f"{self.__class__.__name__}(key={self.key!r}, value={self.value!r}, "
