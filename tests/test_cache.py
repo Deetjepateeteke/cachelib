@@ -13,6 +13,7 @@ These tests cover:
     - Change max_size
     - Read-only mode
     - Persistance
+    - In-background cleanup thread
 
 To run:
     python -m pytest .\tests\test_cache.py
@@ -22,6 +23,7 @@ Author: Deetjepateeteke <https://github.com/Deetjepateeteke>
 
 from pathlib import Path
 import pytest
+import time
 
 from cachelib import LFUCache, LRUCache
 
@@ -248,6 +250,13 @@ def test_persistance(caches):
             invalid_path = True
             cache.save(invalid_path)
             cache.load(invalid_path)
+
+
+def test_cleanup_thread(caches):
+    for cache in caches:
+        cache.set("key", "value", ttl=0.01)
+        time.sleep(2)
+        assert "key" not in cache
 
 
 def test_load_lru(lru):

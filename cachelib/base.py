@@ -19,7 +19,7 @@ from functools import wraps
 import logging
 from pathlib import Path
 import pickle
-from threading import RLock
+from threading import Event, RLock, Thread
 import time
 from typing import Any, Callable,  Hashable, Iterator, Optional, Self, Union
 
@@ -75,6 +75,10 @@ class BaseCache(ABC):
         self._logger: logging.Logger = logging.getLogger(self.name)
         self._stats: Stats = Stats(self)  # statistics
         self._read_only: bool = False  # read-only mode
+
+        # Cleanup thread
+        self._cleanup_thread: _CleanupThread = _CleanupThread(self)
+        self._cleanup_thread.start()
 
         self.set_verbose(verbose)
 
@@ -656,18 +660,19 @@ class BaseCache(ABC):
 
     def __getstate__(self) -> dict[str, object]:
         """
-        Copy the cache's state while excluding the lock,
-        so it will not interfere with saving it as a .pkl file.
+        Copy the cache's state while excluding the lock and the cleanup
+        thread, so it will not interfere with saving it as a .pkl file.
         """
         state = self.__dict__.copy()
         del state["_lock"]
+        del state["_cleanup_thread"]
 
         return state
 
     def __setstate__(self, state) -> None:
         """
         Set the object's state after loading it from a .pkl file
-        and add a threading.RLock().
+        and add a threading.RLock() and the cleanup thread.
         """
         self.__dict__.update(state)
 
@@ -675,6 +680,10 @@ class BaseCache(ABC):
             self._lock = RLock()
         else:
             self._lock = NullContext()
+
+        # Add the cleanup thread
+        self._cleanup_thread: _CleanupThread = _CleanupThread(self)
+        self._cleanup_thread.start()
 
     def read_only(self):
         """
@@ -784,37 +793,37 @@ class Stats:
     def __init__(self, parent: BaseCache):
         self._parent: BaseCache = parent
 
-        self._hits = 0
-        self._misses = 0
-        self._evictions = 0
-        self._starttime = time.time()
+        self._hits: int = 0
+        self._misses: int = 0
+        self._evictions: int = 0
+        self._starttime: float = time.time()
 
     @property
-    def type(self):
+    def type(self) -> str:
         return self._parent.__class__.__name__
 
     @property
-    def hits(self):
+    def hits(self) -> int:
         return self._hits
 
     @property
-    def misses(self):
+    def misses(self) -> int:
         return self._misses
 
     @property
-    def evictions(self):
+    def evictions(self) -> int:
         return self._evictions
 
     @property
-    def size(self):
+    def size(self) -> int:
         return len(self._parent)
 
     @property
-    def max_size(self):
+    def max_size(self) -> Optional[int]:
         return self._parent._max_size
 
     @property
-    def uptime(self):
+    def uptime(self) -> float:
         return time.time() - self._starttime
 
     def _as_dict(self) -> dict[str, Union[str, int]]:
@@ -842,6 +851,43 @@ class Stats:
         """
         return (
             f"{self.__class__.__name__}(hits={self._hits!r}, misses={self._misses!r}, "
-            f"evictions={self._evictions!r}, size={self._size!r}, "
-            f"max-size={self._max_size!r}, uptime={self.uptime!r}s)"
+            f"evictions={self._evictions!r}, size={self.size!r}, "
+            f"max-size={self.max_size!r}, uptime={self.uptime!r}s)"
         )
+
+
+class _CleanupThread(Thread):
+    """
+    A thread that ensures that expired keys get evicted.
+    """
+    __slots__ = ["_cache_obj", "interval", "_stop_event"]
+
+    def __init__(self, cache: BaseCache, interval: float = 1.0):
+        super().__init__(daemon=True)
+
+        self._cache_obj = cache
+        self.interval = interval
+        self._stop_event = Event()
+
+    def run(self):
+        while not self._stop_event.is_set():
+            self.cleanup()
+            self._stop_event.wait(self.interval)
+
+    def stop(self):
+        self._stop_event.set()
+
+    def cleanup(self):
+        expired_nodes = []
+
+        # Check for expired nodes
+        for node in self._cache_obj._cache.values():
+            if node.is_expired():
+                expired_nodes.append(node)
+
+        # Evict the found expired nodes
+        for node in expired_nodes:
+            self._cache_obj._remove_node(node)
+
+            self._cache_obj._stats._evictions += 1
+            self._cache_obj._logger.debug(f"EVICT key='{node.key}' due to ttl")
