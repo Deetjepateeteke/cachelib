@@ -26,7 +26,7 @@ from typing import Any, Callable,  Hashable, Iterator, Optional, Self, Union
 from .utils import NullContext
 from .node import Node
 
-__all__ = ["BaseCache", "Stats"]
+__all__ = ["BaseCache", "Stats", "_CleanupThread"]
 
 
 class BaseCache(ABC):
@@ -178,6 +178,29 @@ class BaseCache(ABC):
             self._logger.debug(f"GET key='{key}' (miss)")
 
             return None
+
+    def get_many(self,
+                 keys: tuple[Hashable]
+                 ) -> dict[Hashable, Optional[Any]]:
+        """
+        Retrieve the (key, value) pairs for the given keys, if they exist.
+
+        Args:
+            keys (tuple[Hashable]): The requested keys.
+
+        Returns:
+            dict[Hashable, Optional[Any]]: The (key, value) pairs for the
+                                        requested keys.
+        """
+        pairs: dict[Hashable, Any] = {}
+        with self._lock:
+            for key in keys:
+                node = self._cache[key]
+                if node.is_expired():
+                    self._remove_node(node)
+                else:
+                    pairs[key] = node.value
+        return pairs
 
     def set(self, key: Hashable, *args, **kwargs) -> None:
         """

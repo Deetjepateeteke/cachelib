@@ -5,9 +5,10 @@
 test_cache.py - Tests for the BaseCache API and the per-cache eviction logic.
 
 These tests cover:
-    - Basic set and get implementation
-    - Delete and clear implementation
-    - Cache.ttl and cache.inspect implementation
+    - Basic cache API:
+        - Basic set and get implementation
+        - Delete and clear implementation
+        - Cache.ttl and cache.inspect implementation
     - Per-cache eviction logic
     - Memoize decorator
     - Change max_size
@@ -122,6 +123,14 @@ def test_clear(caches):
         cache.clear()
         assert "key" not in cache
         assert len(cache) == 0
+
+
+def test_get_many(caches):
+    for cache in caches:
+        cache.set("key", "value")
+        cache.set("k", "v")
+
+        assert cache.get_many(("key", "k")) == {"key": "value", "k": "v"}
 
 
 def test_ttl(caches):
