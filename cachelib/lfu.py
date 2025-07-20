@@ -30,6 +30,7 @@ class LFUCache(BaseCache):
     def __init__(self,
                  name: Optional[str] = "",
                  max_size: Optional[int] = None,
+                 ttl: Optional[Union[int, float]] = None,
                  verbose: bool = False,
                  thread_safe: bool = True
                  ):
@@ -37,6 +38,7 @@ class LFUCache(BaseCache):
         name = f"cachelib.{self.__class__.__name__}" + (f".{name}" if name else "")
         super().__init__(name=name,
                          max_size=max_size,
+                         ttl=ttl,
                          verbose=verbose,
                          thread_safe=thread_safe
                          )

@@ -63,12 +63,14 @@ class BaseCache(ABC):
     def __init__(self,
                  name: str = "",
                  max_size: Optional[int] = None,
+                 ttl: Optional[Union[int, float]] = None,
                  verbose: bool = False,
                  thread_safe: bool = True):
 
         self.name: str = name
         self._cache: dict[Hashable, Node] = {}
         self._max_size: Optional[int] = max_size
+        self._ttl: Optional[Union[int, float]] = ttl
         self._thread_safe: bool = thread_safe
         self._lock: Union[NullContext, RLock] = \
             RLock() if self._thread_safe else NullContext()  # thread safety
@@ -230,9 +232,9 @@ class BaseCache(ABC):
                     if "value" not in params.keys():
                         raise TypeError("expected 'value' argument")
 
-                    # When 'ttl' is not found, default to None
+                    # When 'ttl' is not found, default to the global ttl
                     if "ttl" not in params.keys():
-                        params["ttl"] = None
+                        params["ttl"] = self._ttl
 
                     # Create a new entry in the cache
                     node = self._add_node(key, params["value"], params["ttl"])

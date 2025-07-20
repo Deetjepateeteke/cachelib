@@ -259,6 +259,18 @@ def test_cleanup_thread(caches):
         assert "key" not in cache
 
 
+def test_global_ttl_lru():
+    cache = LRUCache(ttl=10)
+    cache.set("key", "value")
+    assert cache.ttl("key") == 10
+
+
+def test_global_ttl_lfu():
+    cache = LFUCache(ttl=10)
+    cache.set("key", "value")
+    assert cache.ttl("key") == 10
+
+
 def test_load_lru(lru):
     with raises(TypeError, match="expected instance of .*, got .*"):
         path = Path("tests", "test_file.pkl")
