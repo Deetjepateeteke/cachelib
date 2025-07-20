@@ -869,15 +869,18 @@ class _CleanupThread(Thread):
         self.interval = interval
         self._stop_event = Event()
 
-    def run(self):
+    def run(self) -> None:
         while not self._stop_event.is_set():
             self.cleanup()
             self._stop_event.wait(self.interval)
 
-    def stop(self):
+    def stop(self) -> None:
         self._stop_event.set()
 
-    def cleanup(self):
+    def cleanup(self) -> None:
+        """
+        Check for expired nodes and remove them from the cache.
+        """
         expired_nodes = []
 
         # Check for expired nodes

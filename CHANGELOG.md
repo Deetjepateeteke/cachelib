@@ -9,8 +9,12 @@ All notable changes to this project will be documented in this file.
 - Docs
 - cachelib errors
 - Global cache ttl
-- Cleanup thread that runs in background
 - Add warnings
+
+## [0.2.1] - 2025-07-20
+### Added
+- In-background cleanup thread
+- Type hints in BaseCache.Stats
 
 ## [0.2.0] - 2025-07-19
 ### Added
