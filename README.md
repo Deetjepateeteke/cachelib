@@ -1,6 +1,9 @@
 # Cachelib: Python cache library
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+![Version](https://img.shields.io/badge/version-0.3.0-blue.svg)
+
 Cachelib is a safe and lightweight caching package, written in pure Python,
-so it doesn't rely on any third-party dependencies, so it can be easily embedded in any Python program or script.
+so it doesn't rely on any third-party dependencies, which makes it easily embeddable in any Python program or script.
 
 ## Install
 To clone the repository:
@@ -21,20 +24,21 @@ Here's a basic example of how to use `cachelib`:
 ```python
 import cachelib
 
-cache = cachelib.LRUCache()
+# Create an in-memory cache
+cache = cachelib.MemoryCache()
 
 # Set a value with an optional TTL (in seconds)
 cache.set("foo", "bar", ttl=100)
 
 # Retrieve a cached value
-cache.get("foo") # -> returns 'bar'
-
-# Delete a cached value
-cache.delete("foo")
+cache.get("foo")  # -> returns 'bar'
 
 # Check if a key exists
 if "foo" in cache:
     print("'foo' is cached")
+
+# Delete a cached value
+cache.delete("foo")
 
 # Clear the entire cache
 cache.clear()
@@ -44,4 +48,4 @@ cache.clear()
 - Source Code: https://github.com/Deetjepateeteke/cachelib/
 
 ## License
-This project is licensed under the [MIT License](LICENSE)
+This project is licensed under the [MIT License](LICENSE).

@@ -21,7 +21,7 @@ from pathlib import Path
 import pickle
 from threading import Event, RLock, Thread
 import time
-from typing import Any, Callable,  Hashable, Iterator, Optional, Self, Union
+from typing import Any, Callable,  Hashable, Optional, Self, Union
 
 from .utils import NullContext
 from .node import Node
@@ -36,11 +36,11 @@ class BaseCache(ABC):
 
     Methods that should be implemented in subclasses of this class:
         - _add_node
+        - _update_node
+        - _get_node
         - _remove_node
         - _get_evict_node
         - _update_cache_state
-        - __iter__
-        - __reversed__
 
     Base methods:
         get(key): Retrieve a value by key.
@@ -50,6 +50,7 @@ class BaseCache(ABC):
         inspect(key): Get the information of a key.
         memoize(ttl=None): A decorator function that caches the result from a function.
         save(path): Save the cache to a .pkl file.
+        load(path): Load a saved cache from a .pkl file.
         read_only(): A context manager that enables read-only mode.
         set_read_only(read_only): The manual version of read_only().
         verbose(): A context manager that enables debug mode.
@@ -68,7 +69,6 @@ class BaseCache(ABC):
                  thread_safe: bool = True):
 
         self.name: str = name
-        self._cache: dict[Hashable, Node] = {}
         self._max_size: Optional[int] = max_size
         self._ttl: Optional[Union[int, float]] = ttl
         self._thread_safe: bool = thread_safe
@@ -80,7 +80,6 @@ class BaseCache(ABC):
 
         # Cleanup thread
         self._cleanup_thread: _CleanupThread = _CleanupThread(self)
-        self._cleanup_thread.start()
 
         self.set_verbose(verbose)
 
@@ -96,10 +95,40 @@ class BaseCache(ABC):
         Args:
             key (Hashable): The node's key.
             value (Any): The node's value.
-            ttl (Optional[Union[int, float]]): The node's ttl.
+            ttl (Optional[Union[int, float]]): The node's ttl in seconds.
 
         Returns:
-            Node: The new node.
+            Node: The newly created node.
+        """
+        pass
+
+    @abstractmethod
+    def _update_node(self, node: Node, params: dict[str, Any]) -> None:
+        """
+        Update an existing node.
+
+        Args:
+            node (Node): The node that will be updated.
+            params (dict[str, Any]): A dict that has 'value' and/or
+                'ttl' as keys and as value the node's new value or ttl.
+
+        Returns:
+            None
+        """
+
+    @abstractmethod
+    def _get_node(self, key: Hashable) -> Optional[Node]:
+        """
+        Retrieve the node of the given key.
+
+        Args:
+            key (Hashable): The given key.
+
+        Returns:
+            Node: The key's node.
+
+        Raises:
+            KeyError: When the node is not found.
         """
         pass
 
@@ -150,7 +179,7 @@ class BaseCache(ABC):
         """
         try:
             with self._lock:
-                node: Node = self._cache[key]
+                node: Node = self._get_node(key)
 
                 # Check if the node is expired
                 if not node.is_expired():
@@ -195,7 +224,7 @@ class BaseCache(ABC):
         pairs: dict[Hashable, Any] = {}
         with self._lock:
             for key in keys:
-                node = self._cache[key]
+                node = self._get_node(key)
                 if node.is_expired():
                     self._remove_node(node)
                 else:
@@ -268,19 +297,13 @@ class BaseCache(ABC):
                 else:
                     # Update an existing entry
 
-                    node = self._cache[key]
+                    node = self._get_node(key)
                     params = extract_items_from_args(*args, **kwargs)
 
                     if "value" not in params.keys() and "ttl" not in params.keys():
                         raise TypeError("expected either 'value' or 'ttl' as arguments")
 
-                    # Update the node's value, if provided
-                    if "value" in params.keys():
-                        node.value = params["value"]
-                    # Update the node's ttl, if provided
-                    if "ttl" in params.keys():
-                        node.ttl = params["ttl"]
-
+                    self._update_node(node, params)
                     self._update_cache_state(node)
 
                     self._logger.debug("SET key='%s' %s (updating value)"
@@ -317,7 +340,7 @@ class BaseCache(ABC):
             # Do not allow changes while read-only is enabled.
             if not self._read_only:
                 try:
-                    self._remove_node(self._cache[key])
+                    self._remove_node(self._get_node(key))
 
                     self._logger.debug(f"REMOVE key='{key}'")
                 except KeyError:
@@ -369,13 +392,13 @@ class BaseCache(ABC):
         """
         with self._lock:
             try:
-                node = self._cache[key]
+                node = self._get_node(key)
 
                 if node.is_expired():
                     self._remove_node(node)
                     raise KeyError(f"key '{key}' not found in cache")
 
-                return self._cache[key].ttl
+                return node.ttl
             except KeyError:
                 raise KeyError(f"key '{key}' not found in cache")
 
@@ -394,7 +417,7 @@ class BaseCache(ABC):
             KeyError: When the given key is nonexistent or has expired.
         """
         try:
-            node: Node = self._cache[key]
+            node: Node = self._get_node(key)
             self._update_cache_state(node)
 
             return {
@@ -662,26 +685,6 @@ class BaseCache(ABC):
         Call self.delete(key)
         """
         self.delete(key)
-
-    @abstractmethod
-    def __iter__(self) -> Iterator[tuple[Hashable, Any]]:
-        """
-        Yield the (key, value) pairs in order.
-
-        Returns:
-            Iterator (Iterator[tuple[Hashable, Any]]): Iterates over the (key, value) pairs.
-        """
-        pass
-
-    @abstractmethod
-    def __reversed__(self) -> Iterator[tuple[Hashable, Any]]:
-        """
-        Yield the (key, value) pairs in reversed order.
-
-        Returns:
-            Iterator (Iterator[tuple[Hashable, Any]]): Iterates over the (key, value) pairs.
-        """
-        pass
 
     def __getstate__(self) -> dict[str, object]:
         """

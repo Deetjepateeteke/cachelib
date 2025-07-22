@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 
-from .lru import LRUCache
-from .lfu import LFUCache
+from .memory import MemoryCache
 
 
-__all__ = ["LRUCache", "LFUCache"]
-__version__ = "0.2.1"
+__all__ = ["MemoryCache"]
+__version__ = "0.3.0"
 __author__ = "Deetjepateeteke <https://github.com/Deetjepateeteke>"
 __license__ = "MIT"

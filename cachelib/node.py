@@ -23,9 +23,9 @@ class Node:
     This node supports ttl.
 
     Attributes:
-        - key
-        - value
-        - ttl
+        - key: the node's key
+        - value: the node's value (can't be None)
+        - ttl: the node's ttl in seconds
         - prev
         - next
     """
