@@ -27,7 +27,7 @@ import pytest
 import time
 
 from cachelib import MemoryCache
-from cachelib.errors import CacheOverflowError
+from cachelib.errors import CacheOverflowError, ReadOnlyError
 
 raises = pytest.raises
 
@@ -207,15 +207,15 @@ def test_read_only(cache):
     cache.set("k", "v")
     with cache.read_only():
 
-        with raises(RuntimeError):
+        with raises(ReadOnlyError):
             cache.set("key", "value")
         assert "key" not in cache
 
-        with raises(RuntimeError):
+        with raises(ReadOnlyError):
             cache.delete("k")
         assert "k" in cache
 
-        with raises(RuntimeError):
+        with raises(ReadOnlyError):
             cache.clear()
         assert len(cache) == 1
 

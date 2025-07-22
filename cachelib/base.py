@@ -23,6 +23,7 @@ from threading import Event, RLock, Thread
 import time
 from typing import Any, Callable,  Hashable, Optional, Self, Union
 
+from .errors import ReadOnlyError
 from .utils import NullContext
 from .node import Node
 
@@ -57,8 +58,6 @@ class BaseCache(ABC):
         set_verbose(verbose): The manual version of verbose().
         get_stats(): Get the cache's stats.
     """
-
-    read_only_error = RuntimeError("Cannot modify cache: read-only mode is enabled.")
 
     @abstractmethod
     def __init__(self,
@@ -319,7 +318,7 @@ class BaseCache(ABC):
                     self._stats._evictions += 1
                     self._logger.debug(f"EVICT key='{node.key}' due to capacity")
             else:
-                raise self.read_only_error
+                raise ReadOnlyError()
 
     def delete(self, key: Hashable) -> None:
         """
@@ -347,7 +346,7 @@ class BaseCache(ABC):
                     # Invalid key
                     raise KeyError(f"key '{key}' not found in cache")
             else:
-                raise self.read_only_error
+                raise ReadOnlyError()
 
     def clear(self) -> None:
         """
@@ -375,7 +374,7 @@ class BaseCache(ABC):
 
                 self._logger.debug("CLEAR CACHE")
             else:
-                raise self.read_only_error
+                raise ReadOnlyError()
 
     def ttl(self, key: Hashable) -> Optional[Union[float, int]]:
         """
@@ -471,7 +470,7 @@ class BaseCache(ABC):
                         if not self._read_only:
                             self.set(cache_key, result, ttl=ttl)
                         else:
-                            raise self.read_only_error
+                            raise ReadOnlyError()
 
                         return result
             return wrapper
@@ -568,7 +567,7 @@ class BaseCache(ABC):
                     self._logger.debug(f"EVICT key='{least_freq_node.key}' \
                                     due to max-size")
             else:
-                raise self.read_only_error
+                raise ReadOnlyError()
 
     def set_verbose(self, verbose: bool) -> None:
         """
