@@ -27,7 +27,7 @@ import pytest
 import time
 
 from cachelib import MemoryCache
-from cachelib.errors import CacheOverflowError, ReadOnlyError
+from cachelib.errors import CacheOverflowError, KeyNotFoundError, ReadOnlyError
 
 raises = pytest.raises
 
@@ -104,7 +104,7 @@ def test_delete(cache):
     assert "k" not in cache
 
     # Delete nonexistent key
-    with raises(KeyError, match="key '.*' not found in cache"):
+    with raises(KeyNotFoundError):
         cache.delete("nonexistent")
 
 
@@ -132,7 +132,7 @@ def test_ttl(cache):
     assert cache.ttl("k") is None
 
     # Get ttl of nonexistent key
-    with raises(KeyError, match="key '.*' not found in cache"):
+    with raises(KeyNotFoundError):
         cache.ttl("non-existent")
 
 
@@ -162,7 +162,7 @@ def test_inspect(cache, mocker):
     assert info["ttl"] == 10
 
     # Inspect nonexistent key
-    with raises(KeyError, match="key '.*' not found in cache"):
+    with raises(KeyNotFoundError):
         cache.inspect("non-existent")
 
 

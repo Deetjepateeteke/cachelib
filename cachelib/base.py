@@ -23,7 +23,7 @@ from threading import Event, RLock, Thread
 import time
 from typing import Any, Callable,  Hashable, Optional, Self, Union
 
-from .errors import ReadOnlyError
+from .errors import ReadOnlyError, KeyNotFoundError
 from .utils import NullContext
 from .node import Node
 
@@ -344,7 +344,7 @@ class BaseCache(ABC):
                     self._logger.debug(f"REMOVE key='{key}'")
                 except KeyError:
                     # Invalid key
-                    raise KeyError(f"key '{key}' not found in cache")
+                    raise KeyNotFoundError(key)
             else:
                 raise ReadOnlyError()
 
@@ -395,11 +395,11 @@ class BaseCache(ABC):
 
                 if node.is_expired():
                     self._remove_node(node)
-                    raise KeyError(f"key '{key}' not found in cache")
+                    raise KeyNotFoundError(key)
 
                 return node.ttl
             except KeyError:
-                raise KeyError(f"key '{key}' not found in cache")
+                raise KeyNotFoundError(key)
 
     def inspect(self, key: Hashable) -> Optional[dict[str, Any]]:
         """
@@ -427,7 +427,7 @@ class BaseCache(ABC):
             }
 
         except KeyError:
-            raise KeyError(f"key '{key}' not found in cache")
+            raise KeyNotFoundError(key)
 
     def memoize(self, ttl: Optional[Union[int, float]] = None) -> Any:
         """
