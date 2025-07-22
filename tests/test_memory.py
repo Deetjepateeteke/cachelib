@@ -27,6 +27,7 @@ import pytest
 import time
 
 from cachelib import MemoryCache
+from cachelib.errors import CacheOverflowError
 
 raises = pytest.raises
 
@@ -185,20 +186,21 @@ def test_memoize(cache, mocker):
     assert add(1, 2) == 3 and calls == 2  # Key isn't expired
 
 
-def test_change_max_size(cache):
-    cache.set("key", "value")
-    cache.set("k", "v")
+def test_change_max_size(lru, lfu):
+    for cache in (lru, lfu):
+        cache.set("key", "value")
+        cache.set("k", "v")
 
-    cache.max_size = 1
+        cache.max_size = 1
 
-    assert "key" not in cache
+        assert "key" not in cache
 
-    # Invalid calls
-    with raises(ValueError, match=".*.max_size should be non-negative or None"):
-        cache.max_size = -1
+        # Invalid calls
+        with raises(ValueError, match=".*.max_size should be non-negative or None"):
+            cache.max_size = -1
 
-    with raises(TypeError, match=".*.max_size should be of type: int or NoneType"):
-        cache.max_size = "invalid type"
+        with raises(TypeError, match=".*.max_size should be of type: int or NoneType"):
+            cache.max_size = "invalid type"
 
 
 def test_read_only(cache):
@@ -310,3 +312,8 @@ def test_lfu_eviction_logic(lfu):
     lfu.max_size = 1
     assert "key" in lfu
     assert "k" not in lfu
+
+def test_cache_overflow_error(cache):
+    cache.max_size = 0
+    with raises(CacheOverflowError):
+        cache.set("key", "value")

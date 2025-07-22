@@ -15,6 +15,7 @@ Author: Deetjepateeteke <https://github.com/Deetjepateeteke>
 from typing import Any, Hashable, Optional, Union
 
 from .base import BaseCache
+from .errors import *
 from .node import Node
 
 
@@ -93,15 +94,15 @@ class MemoryCache(BaseCache):
             # Create a node
             node: Node = Node(key, value, ttl)
 
+            # Store in cache
+            self._cache[key] = node
+
             if self._eviction_policy in ("lfu", "lru"):
                 # Update linked list
                 node.prev = self._head
                 node.next = self._head.next
                 self._head.next.prev = node
                 self._head.next = node
-
-            # Store in cache
-            self._cache[key] = node
 
             if self._eviction_policy == "lfu":
                 self._access_freq[key] = 0
@@ -117,7 +118,7 @@ class MemoryCache(BaseCache):
             if "ttl" in params.keys():
                 node.ttl = params["ttl"]
 
-    def _get_node(self, key: Hashable) -> Optional[Node]:
+    def _get_node(self, key: Hashable) -> Node:
         # When the requested node doesn't exist,
         # it will raise a KeyError that will be handled
         # by BaseCache.get() by returning None.
@@ -126,13 +127,15 @@ class MemoryCache(BaseCache):
 
     def _remove_node(self, node: Node) -> None:
         with self._lock:
-            # Remove node from liked list
-            node.prev.next = node.next
-            node.next.prev = node.prev
-            node.prev = node.next = None
 
             # Remove node from cache
             del self._cache[node.key]
+
+            if self._eviction_policy in ("lfu", "lru"):
+                # Remove node from liked list
+                node.prev.next = node.next
+                node.next.prev = node.prev
+                node.prev = node.next = None
 
             if self._eviction_policy == "lfu":
                 del self._access_freq[node.key]
@@ -143,6 +146,8 @@ class MemoryCache(BaseCache):
                 return self._lfu_eviction()
             elif self._eviction_policy == "lru":
                 return self._lru_eviction()
+            else:
+                raise CacheOverflowError(max_size=self._max_size)
 
     def _update_cache_state(self, node: Node) -> None:
         with self._lock:
