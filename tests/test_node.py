@@ -20,6 +20,7 @@ Author: Deetjepateeteke <https://github.com/Deetjepateeteke>
 
 import pytest
 
+from cachelib.errors import CacheConfigurationError
 from cachelib.node import Node
 
 raises = pytest.raises
@@ -45,10 +46,10 @@ def test_set_and_get(mocker):
     assert node.is_expired()
 
     # Invalid calls
-    with raises(ValueError, match="Node.ttl must be non-negative or None"):
+    with raises(CacheConfigurationError):
         node.ttl = -1
 
-    with raises(TypeError, match="Node.ttl must be of type: int, float or NoneType"):
+    with raises(CacheConfigurationError):
         node.ttl = True
 
 

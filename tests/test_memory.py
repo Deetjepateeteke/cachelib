@@ -27,7 +27,14 @@ import pytest
 import time
 
 from cachelib import MemoryCache
-from cachelib.errors import CacheOverflowError, KeyNotFoundError, ReadOnlyError
+from cachelib.errors import (
+    CacheConfigurationError,
+    CacheOverflowError,
+    CachePathError,
+    KeyExpiredError,
+    KeyNotFoundError,
+    ReadOnlyError
+)
 
 raises = pytest.raises
 
@@ -65,10 +72,10 @@ def test_set_get(cache):
     assert cache.get("non-existent") is None
 
     # Set key - invalid calls
-    with raises(TypeError, match="expected 'value' argument"):
+    with raises(CacheConfigurationError):
         cache.set("some key")
 
-    with raises(TypeError, match="expected at most 3 arguments, got .*"):
+    with raises(CacheConfigurationError):
         cache.set(1, 2, 3, 4)
 
 
@@ -87,7 +94,7 @@ def test_update(cache):
     assert cache["k"] == "k"
 
     # Update key - invalid call
-    with raises(TypeError, match="expected either 'value' or 'ttl' as arguments"):
+    with raises(CacheConfigurationError):
         cache.set("k")
 
 
@@ -131,6 +138,11 @@ def test_ttl(cache):
     cache.set("k", ttl=None)
     assert cache.ttl("k") is None
 
+    cache.set("k", "v", ttl=0)
+
+    with raises(KeyExpiredError):
+        cache.ttl("k")
+
     # Get ttl of nonexistent key
     with raises(KeyNotFoundError):
         cache.ttl("non-existent")
@@ -145,7 +157,6 @@ def test_inspect(cache, mocker):
 
     assert info["key"] == "k"
     assert info["value"] == "v"
-    assert not info["expired"]
     assert info["ttl"] == 10
 
     cache.clear()
@@ -154,12 +165,12 @@ def test_inspect(cache, mocker):
     cache.set("k", "v", ttl=10)
 
     mock_obj.return_value = 11
-    info = cache.inspect("k")
 
-    assert info["key"] == "k"
-    assert info["value"] == "v"
-    assert info["expired"]
-    assert info["ttl"] == 10
+    with raises(KeyExpiredError):
+        info = cache.inspect("k")
+
+    with raises(KeyNotFoundError):
+        info = cache.inspect("non-existent")
 
     # Inspect nonexistent key
     with raises(KeyNotFoundError):
@@ -196,10 +207,10 @@ def test_change_max_size(lru, lfu):
         assert "key" not in cache
 
         # Invalid calls
-        with raises(ValueError, match=".*.max_size should be non-negative or None"):
+        with raises(CacheConfigurationError):
             cache.max_size = -1
 
-        with raises(TypeError, match=".*.max_size should be of type: int or NoneType"):
+        with raises(CacheConfigurationError):
             cache.max_size = "invalid type"
 
 
@@ -232,12 +243,12 @@ def test_persistance(cache):
     path.unlink()
 
     # Invalid calls
-    with raises(ValueError, match="expected a '.pkl' file, got '.*': .*"):
+    with raises(CachePathError, match="expected a '.pkl' file, got '.*': .*"):
         invalid_path = Path("tests", "test_file.txt")
         cache.save(invalid_path)
         cache.load(invalid_path)
 
-    with raises(TypeError, match="'path' must be a str or Path, got .*"):
+    with raises(CachePathError, match="'path' must be a str or Path, got .*"):
         invalid_path = True
         cache.save(invalid_path)
         cache.load(invalid_path)
@@ -312,6 +323,7 @@ def test_lfu_eviction_logic(lfu):
     lfu.max_size = 1
     assert "key" in lfu
     assert "k" not in lfu
+
 
 def test_cache_overflow_error(cache):
     cache.max_size = 0

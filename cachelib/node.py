@@ -16,6 +16,8 @@ from __future__ import annotations
 import time
 from typing import Any, Hashable, Optional, Union, Self
 
+from .errors import CacheConfigurationError
+
 
 class Node:
     """
@@ -102,9 +104,9 @@ class Node:
         if ttl is not None:
             if type(ttl) in (int, float):
                 if ttl < 0:
-                    raise ValueError("Node.ttl must be non-negative or None")
+                    raise CacheConfigurationError("ttl must be a positive int or float, or None")
             else:
-                raise TypeError("Node.ttl must be of type: int, float or NoneType")
+                raise CacheConfigurationError("ttl must be a positive int or float, or None")
 
         self._ttl = ttl
 

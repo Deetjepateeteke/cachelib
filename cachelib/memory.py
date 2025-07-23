@@ -15,7 +15,7 @@ Author: Deetjepateeteke <https://github.com/Deetjepateeteke>
 from typing import Any, Hashable, Optional, Union
 
 from .base import BaseCache
-from .errors import *
+from .errors import CacheOverflowError, KeyNotFoundError
 from .node import Node
 
 
@@ -53,19 +53,11 @@ class MemoryCache(BaseCache):
         super().__init__(
             name=name,
             max_size=max_size,
+            eviction_policy=eviction_policy,
             ttl=ttl,
             verbose=verbose,
             thread_safe=thread_safe
         )
-
-        # Check for a valid eviction policy
-        if eviction_policy in ("lfu", "lru", ""):
-            if max_size is None and eviction_policy in ("lfu", "lru"):
-                raise ValueError("can only set eviction_policy when max_size is not infinite")
-            else:
-                self._eviction_policy: str = eviction_policy
-        else:
-            raise ValueError(f"eviction_policy should be 'lru' or 'lfu', got '{eviction_policy}'")
 
         self._cache: dict[Hashable, Any] = {}
 
@@ -120,10 +112,13 @@ class MemoryCache(BaseCache):
 
     def _get_node(self, key: Hashable) -> Node:
         # When the requested node doesn't exist,
-        # it will raise a KeyError that will be handled
+        # it will raise a KeyNotFoundError that will be handled
         # by BaseCache.get() by returning None.
         with self._lock:
-            return self._cache[key]
+            try:
+                return self._cache[key]
+            except KeyError as exc:
+                raise KeyNotFoundError(key) from exc
 
     def _remove_node(self, node: Node) -> None:
         with self._lock:

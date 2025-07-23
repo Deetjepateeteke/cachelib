@@ -9,9 +9,15 @@ All notable changes to this project will be documented in this file.
 - Add `max_memory`
 - CLI
 - Docs
-- Custom cachelib errors
 - Add warnings
 
+## [0.3.1] - 2025-07-24
+### Added
+- `cachelib.errors`: custom errors
+
+### Fixed
+- Fixed bug where `cache._get_evict_node()` returned `None` when no eviction policy was set
+ 
 ## [0.3.0] - 2025-07-22
 ### Added
 - Added `MemoryCache` with lru and lfu support
