@@ -203,3 +203,12 @@ class MemoryCache(BaseCache):
 
                 return current_node
             return self._get_node(least_freq_keys[0])
+
+    def keys(self) -> list[Any]:
+        with self._lock:
+            return list(self._cache.keys())
+        
+    def values(self) -> list[Any]:
+        with self._lock:
+            nodes = list(self._cache.values())
+            return list(map(lambda node: node.value, nodes))

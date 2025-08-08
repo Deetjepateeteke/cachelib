@@ -177,6 +177,14 @@ def test_inspect(cache, mocker):
         cache.inspect("non-existent")
 
 
+def test_keys_and_values(cache):
+    cache.set("foo", "bar")
+    cache.set("bar", "foo")
+
+    assert cache.keys() == ["foo", "bar"]
+    assert cache.values() == ["bar", "foo"]
+
+
 def test_memoize(cache, mocker):
     mock_obj = mocker.patch("cachelib.base.time.time", return_value=0)
 

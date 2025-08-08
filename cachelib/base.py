@@ -268,7 +268,7 @@ class BaseCache(ABC):
             None
 
         Raises:
-            TypeError: When the given arguments aren't valid.
+            CacheConfigurationError: When the given arguments aren't valid.
             ReadOnlyError: When cache.set() is called while
                         read-only mode is enabled.
         """
@@ -457,6 +457,25 @@ class BaseCache(ABC):
 
         except KeyError:
             raise KeyNotFoundError(key)
+        
+    @abstractmethod
+    def keys(self) -> list[Any]:
+        """
+        Get the cached keys.
+
+        Returns:
+            list[Any]: The list with the cached keys.
+        """
+        ...
+
+    @abstractmethod
+    def values(self) -> list[Any]:
+        """
+        Get the cached values.
+
+        Returns:
+            list[Any]: The list with the cached values.
+        """
 
     def memoize(self, ttl: Optional[Union[int, float]] = None) -> Any:
         """
