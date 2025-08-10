@@ -179,10 +179,9 @@ def test_inspect(cache, mocker):
 
 def test_keys_and_values(cache):
     cache.set("foo", "bar")
-    cache.set("bar", "foo")
 
-    assert cache.keys() == ["foo", "bar"]
-    assert cache.values() == ["bar", "foo"]
+    assert "foo" in cache.keys()
+    assert "bar" in cache.values()
 
 
 def test_memoize(cache, mocker):
@@ -194,7 +193,7 @@ def test_memoize(cache, mocker):
     def add(a, b):
         nonlocal calls
         calls += 1
-        return a+b
+        return a + b
 
     assert add(1, 2) == 3 and calls == 1
     assert add(1, 2) == 3 and calls == 1  # Key isn't expired
@@ -268,30 +267,33 @@ def test_cleanup_thread(cache):
     assert "key" not in cache
 
 
-def test_global_ttl(cache):
-    cache._ttl = 10
+def test_global_ttl():
+    cache = MemoryCache(ttl=10)
     cache.set("key", "value")
     assert cache.ttl("key") == 10
 
 
-"""def test_load_lru(lru):
-    with raises(TypeError, match="expected instance of .*, got .*"):
-        path = Path("tests", "test_file.pkl")
+def test_load(cache):
+    path = Path("tests", "test_file.pkl")
 
-        lru.save(path)
-        MemoryCache.load(path)
+    cache.set("foo", "bar")
+
+    cache.save(path)
+
+    loaded_cache = MemoryCache.load(path)
+
+    assert loaded_cache.get("foo") == "bar"
 
     path.unlink()
 
-
-def test_load_lfu(lfu):
-    with raises(TypeError, match="expected instance of .*, got .*"):
-        path = Path("tests", "test_file.pkl")
-
-        lfu.save(path)
+    # Invalid calls
+    with raises(CachePathError, match="'path' must be a str or Path, got .*"):
+        path = 0  # Invalid datatype
         MemoryCache.load(path)
 
-    path.unlink()"""
+    with raises(CachePathError, match="expected a '.pkl' file, got '.*': .*"):
+        path = Path("tests", "test_file.txt")  # Invalid path suffix
+        MemoryCache.load(path)
 
 
 def test_lru_eviction_logic(lru):

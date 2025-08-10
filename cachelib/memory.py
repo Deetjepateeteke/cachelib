@@ -15,7 +15,7 @@ Author: Deetjepateeteke <https://github.com/Deetjepateeteke>
 from typing import Any, Hashable, Optional, Union
 
 from .base import BaseCache
-from .errors import CacheOverflowError, KeyNotFoundError
+from .errors import CacheOverflowError, KeyNotFoundError, ReadOnlyError
 from .node import Node
 
 
@@ -162,6 +162,24 @@ class MemoryCache(BaseCache):
                 self._head.next.prev = node
                 self._head.next = node
 
+    def clear(self) -> None:
+        with self._lock:
+            # Do not allow changes while read-only is enabled.
+            if not self._read_only:
+                self._cache = {}
+
+                # Only LFUCache has a _lookup_freq table
+                if self.__class__.__name__ == "LFUCache":
+                    self._lookup_freq = {}
+
+                self._head = self._tail = Node(None, None)
+                self._head.next = self._tail
+                self._tail.prev = self._head
+
+                self._logger.debug("CLEAR CACHE")
+            else:
+                raise ReadOnlyError()
+
     def _lru_eviction(self) -> Node:
         """
         LRU (Least Recently Used) eviction.
@@ -204,11 +222,14 @@ class MemoryCache(BaseCache):
                 return current_node
             return self._get_node(least_freq_keys[0])
 
-    def keys(self) -> list[Any]:
+    def keys(self) -> tuple[Hashable]:
         with self._lock:
-            return list(self._cache.keys())
-        
-    def values(self) -> list[Any]:
+            return tuple(self._cache.keys())
+
+    def values(self) -> tuple[Any]:
         with self._lock:
-            nodes = list(self._cache.values())
-            return list(map(lambda node: node.value, nodes))
+            nodes = tuple(self._cache.values())
+            return tuple(map(lambda node: node.value, nodes))
+
+    def __len__(self) -> int:
+        return len(self._cache)

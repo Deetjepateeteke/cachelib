@@ -22,7 +22,7 @@ from pathlib import Path
 import pickle
 from threading import Event, RLock, Thread
 import time
-from typing import Any, Callable,  Hashable, Optional, Self, Union
+from typing import Any, Callable, Hashable, Literal, Optional, Self, Union
 
 from .errors import (
     CacheConfigurationError,
@@ -60,6 +60,8 @@ class BaseCache(ABC):
         delete(key): Remove an entry from the cache.
         clear(): Reset the cache.
         inspect(key): Get the information of a key.
+        keys(): Get the cached keys.
+        values(): Get the cached values.
         memoize(ttl=None): A decorator function that caches the result from a function.
         save(path): Save the cache to a .pkl file.
         load(path): Load a saved cache from a .pkl file.
@@ -74,7 +76,7 @@ class BaseCache(ABC):
     def __init__(self,
                  name: str = "",
                  max_size: Optional[int] = None,
-                 eviction_policy: str = "",
+                 eviction_policy: Optional[Literal["", "lru", "lfu"]] = None,
                  ttl: Optional[Union[int, float]] = None,
                  verbose: bool = False,
                  thread_safe: bool = True):
@@ -92,7 +94,7 @@ class BaseCache(ABC):
         self._read_only: bool = False  # read-only mode
 
         # Check for a valid eviction policy
-        if eviction_policy in ("lfu", "lru", ""):
+        if eviction_policy in ("lfu", "lru", "", None):
             if max_size is None and eviction_policy in ("lfu", "lru"):
                 raise CacheConfigurationError("can only set eviction_policy when max_size is not infinite")
             else:
@@ -298,7 +300,7 @@ class BaseCache(ABC):
         with self._lock:
             # Do not allow changes while read-only is enabled.
             if not self._read_only:
-                if key not in self._cache.keys():
+                if key not in self.keys():
                     # Add a new key
 
                     params = extract_items_from_args(*args, **kwargs)
@@ -372,6 +374,7 @@ class BaseCache(ABC):
             else:
                 raise ReadOnlyError()
 
+    @abstractmethod
     def clear(self) -> None:
         """
         Clear all entries from the cache.
@@ -383,22 +386,7 @@ class BaseCache(ABC):
             ReadOnlyError: When cache.clear() is called while
                         read-only mode is enabled.
         """
-        with self._lock:
-            # Do not allow changes while read-only is enabled.
-            if not self._read_only:
-                self._cache = {}
-
-                # Only LFUCache has a _lookup_freq table
-                if self.__class__.__name__ == "LFUCache":
-                    self._lookup_freq = {}
-
-                self._head = self._tail = Node(None, None)
-                self._head.next = self._tail
-                self._tail.prev = self._head
-
-                self._logger.debug("CLEAR CACHE")
-            else:
-                raise ReadOnlyError()
+        ...
 
     def ttl(self, key: Hashable) -> Optional[Union[float, int]]:
         """
@@ -457,25 +445,26 @@ class BaseCache(ABC):
 
         except KeyError:
             raise KeyNotFoundError(key)
-        
+
     @abstractmethod
-    def keys(self) -> list[Any]:
+    def keys(self) -> tuple[Hashable]:
         """
         Get the cached keys.
 
         Returns:
-            list[Any]: The list with the cached keys.
+            tuple[Hashable]: The tuple with the cached keys.
         """
         ...
 
     @abstractmethod
-    def values(self) -> list[Any]:
+    def values(self) -> tuple[Any]:
         """
         Get the cached values.
 
         Returns:
-            list[Any]: The list with the cached values.
+            tuple[Any]: The tuple with the cached values.
         """
+        ...
 
     def memoize(self, ttl: Optional[Union[int, float]] = None) -> Any:
         """
@@ -499,19 +488,19 @@ class BaseCache(ABC):
         def decorator(func: Callable) -> Callable:
             @wraps(func)
             def wrapper(*args, **kwargs) -> Any:
-                def _make_cache_key(args, kwargs) -> tuple:
+                def _make_cache_key(args, kwargs) -> tuple[Hashable]:
                     """
                     Transform the args and kwargs into a hashable tuple
                     so it can be used as a dict key. The tuple looks like:
-                    (a, b, (c, 1), (d, 2))
+                    [a, b, [c, 1], [d, 2]]
                     """
                     kwargs_key = tuple(sorted(kwargs.items()))
-                    return args + kwargs_key
+                    return tuple(args) + kwargs_key
 
                 cache_key = _make_cache_key(args, kwargs)
 
                 with self._lock:
-                    if cache_key in self._cache.keys() and not self._cache[cache_key].is_expired():
+                    if self.__contains__(cache_key) and not self._get_node(cache_key).is_expired():
                         return self.get(cache_key)
                     else:
                         result = func(*args, **kwargs)
@@ -712,13 +701,14 @@ class BaseCache(ABC):
         """
         Returns True if the given key exists in the cache; False otherwise.
         """
-        return key in self._cache.keys()
+        return key in self.keys()
 
+    @abstractmethod
     def __len__(self) -> int:
         """
         Returns the amount of entries in the cache.
         """
-        return len(self._cache)
+        ...
 
     def __getitem__(self, key: Hashable) -> Any:
         """

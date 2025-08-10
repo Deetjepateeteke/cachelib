@@ -37,8 +37,8 @@ class Node:
                  key: Hashable,
                  value: Any,
                  ttl: Optional[Union[int, float]] = None,
-                 prev: Optional[Self] = None,  # LRUCache.head.prev=None
-                 next: Optional[Self] = None  # LRUCache.tail.next=None
+                 prev: Optional[Self] = None,  # cache.head.prev=None
+                 next: Optional[Self] = None  # cache.tail.next=None
                  ):
         self.key: Hashable = key
         self._value: Any = value
