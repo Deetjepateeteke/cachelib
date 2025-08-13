@@ -1,6 +1,6 @@
 [project]
 name = "cachelib"
-version = "0.3.1"
+version = "0.4.0"
 description = "A safe and lightweight caching package, written in Python."
 authors = [
     {name = "Deetjepateeteke"}
@@ -17,6 +17,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.group.dev.dependencies]
 flake8 = "^7.3.0"
-
-[tool.poetry.group.test.dependencies]
 pytest = "^8.4.1"
+pytest-cov = "^6.2.1"
+pytest-mock = "^3.14.1"
+coverage = "^7.10.3"

@@ -1,24 +1,29 @@
 # Cachelib: Python cache library
+
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-![Version](https://img.shields.io/badge/version-0.3.1-blue.svg)
+![Version](https://img.shields.io/badge/version-0.4.0-blue.svg)
 
 Cachelib is a safe and lightweight caching package, written in pure Python,
 so it doesn't rely on any third-party dependencies, which makes it easily embeddable in any Python program or script.
 
 ## Install
+
 To clone the repository:
+
 ```bash
 git clone https://github.com/Deetjepateeteke/cachelib.git
 cd cachelib
 ```
 
 ## Features
-- In-memory cache
+
+- In-memory cache/On-disk cache
 - TTL support
 - LRU/LFU eviction
 - Thread-safe
 
 ## Usage
+
 Here's a basic example of how to use `cachelib`:
 
 ```python
@@ -45,7 +50,9 @@ cache.clear()
 ```
 
 ## Links
+
 - Source Code: https://github.com/Deetjepateeteke/cachelib/
 
 ## License
+
 This project is licensed under the [MIT License](LICENSE).

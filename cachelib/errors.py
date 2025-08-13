@@ -20,6 +20,7 @@ __all__ = [
     "CachePersistenceErrorBase",
     "SerializationError",
     "CacheConfigurationError",
+    "CleanupThreadConfigurationError",
     "CacheOverflowError",
     "ReadOnlyError",
     "KeyNotFoundError",
@@ -32,14 +33,15 @@ __all__ = [
 ]
 
 
-class CacheError(Exception): pass  # The master `cachelib` exception
+class CacheError(Exception): ...  # The master `cachelib` exception
 
-class KeyErrorBase(CacheError): pass
-class CachePersistenceErrorBase(CacheError): pass
-class SerializationErrorBase(CacheError): pass
+class KeyErrorBase(CacheError): ...
+class CachePersistenceErrorBase(CacheError): ...
+class SerializationErrorBase(CacheError): ...
 
 
-class CacheConfigurationError(CacheError): pass
+class CacheConfigurationError(CacheError): ...
+class CleanupThreadConfigurationError(CacheError): ...
 
 class CacheOverflowError(CacheError):
     """Raised when the cache is full and no eviction policy is available."""
@@ -71,10 +73,10 @@ class KeyExpiredError(KeyErrorBase):
         super().__init__(msg)
 
 
-class CacheLoadError(CachePersistenceErrorBase): pass
-class CacheSaveError(CachePersistenceErrorBase): pass
-class CachePathError(CachePersistenceErrorBase): pass
+class CacheLoadError(CachePersistenceErrorBase): ...
+class CacheSaveError(CachePersistenceErrorBase): ...
+class CachePathError(CachePersistenceErrorBase): ...
 
 
-class SerializationError(SerializationErrorBase): pass
-class DeserializationError(SerializationErrorBase): pass
+class SerializationError(SerializationErrorBase): ...
+class DeserializationError(SerializationErrorBase): ...

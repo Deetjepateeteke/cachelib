@@ -9,7 +9,6 @@ interface for every cache in cachelib.
 Classes:
     BaseCache(): The foundational BaseCache class.
     Stats(): Used to store statistics, it is used in BaseCache.stats.
-    _CleanupThread(): An in-background thread to remove expired nodes.
 
 Author: Deetjepateeteke <https://github.com/Deetjepateeteke>
 """
@@ -19,26 +18,26 @@ from abc import ABC, abstractmethod
 from functools import wraps
 import logging
 from pathlib import Path
-import pickle
-from threading import Event, RLock, Thread
+from threading import RLock
 import time
-from typing import Any, Callable, Hashable, Literal, Optional, Self, Union
+from typing import Any, Callable, Hashable, Optional, Union
 
+from .cleanup_thread import CleanupThread, DiskCleanupThread, MemoryCleanupThread
 from .errors import (
     CacheConfigurationError,
-    CacheLoadError,
+    CacheOverflowError,
     CachePathError,
-    CacheSaveError,
     DeserializationError,
     KeyExpiredError,
     KeyNotFoundError,
     ReadOnlyError,
     SerializationError
 )
+from .eviction import EvictionPolicy, _LFUEviction, _LRUEviction
 from .utils import NullContext
 from .node import Node
 
-__all__ = ["BaseCache", "Stats", "_CleanupThread"]
+__all__ = ["BaseCache", "Stats"]
 
 
 class BaseCache(ABC):
@@ -53,30 +52,13 @@ class BaseCache(ABC):
         - _remove_node
         - _get_evict_node
         - _update_cache_state
-
-    Base methods:
-        get(key): Retrieve a value by key.
-        set(key, value, ttl=None): Set the value for the given key.
-        delete(key): Remove an entry from the cache.
-        clear(): Reset the cache.
-        inspect(key): Get the information of a key.
-        keys(): Get the cached keys.
-        values(): Get the cached values.
-        memoize(ttl=None): A decorator function that caches the result from a function.
-        save(path): Save the cache to a .pkl file.
-        load(path): Load a saved cache from a .pkl file.
-        read_only(): A context manager that enables read-only mode.
-        set_read_only(read_only): The manual version of read_only().
-        verbose(): A context manager that enables debug mode.
-        set_verbose(verbose): The manual version of verbose().
-        get_stats(): Get the cache's stats.
     """
 
     @abstractmethod
     def __init__(self,
                  name: str = "",
                  max_size: Optional[int] = None,
-                 eviction_policy: Optional[Literal["", "lru", "lfu"]] = None,
+                 eviction_policy: Optional[EvictionPolicy] = None,
                  ttl: Optional[Union[int, float]] = None,
                  verbose: bool = False,
                  thread_safe: bool = True):
@@ -89,23 +71,33 @@ class BaseCache(ABC):
         self._thread_safe: bool = thread_safe
         self._lock: Union[NullContext, RLock] = \
             RLock() if self._thread_safe else NullContext()  # thread safety
-        self._logger: logging.Logger = logging.getLogger(self.name)
+        self.logger: logging.Logger = logging.getLogger(self.name)
         self._stats: Stats = Stats(self)  # statistics
         self._read_only: bool = False  # read-only mode
 
         # Check for a valid eviction policy
-        if eviction_policy in ("lfu", "lru", "", None):
-            if max_size is None and eviction_policy in ("lfu", "lru"):
+        if isinstance(eviction_policy, (EvictionPolicy, type(None))):
+            if max_size is None and isinstance(eviction_policy, EvictionPolicy):
                 raise CacheConfigurationError("can only set eviction_policy when max_size is not infinite")
             else:
-                self._eviction_policy: str = eviction_policy
+                self._eviction_policy: EvictionPolicy = eviction_policy
         else:
-            raise CacheConfigurationError(f"got unsupported eviction policy: {eviction_policy}")
-
-        # Cleanup thread
-        self._cleanup_thread: _CleanupThread = _CleanupThread(self)
+            raise CacheConfigurationError(
+                f"Eviction policy must be of type "
+                f"{EvictionPolicy.__module__}.{EvictionPolicy.__qualname__}"
+                f", got {type(eviction_policy).__name__}"
+            )
 
         self.set_verbose(verbose)
+
+    def _create_cleanup_thread(self):
+        # Initialize self.cleanup_thread
+        self._cleanup_thread_interval = 1.0
+        if self.__class__.__name__ == "MemoryCache":
+            self.cleanup_thread: CleanupThread = MemoryCleanupThread(self, self._cleanup_thread_interval)
+        elif self.__class__.__name__ == "DiskCache":
+            self.cleanup_thread: CleanupThread = DiskCleanupThread(self, self._cleanup_thread_interval)
+        self.cleanup_thread.start()
 
     @abstractmethod
     def _add_node(self,
@@ -170,7 +162,6 @@ class BaseCache(ABC):
         """
         ...
 
-    @abstractmethod
     def _get_evict_node(self) -> Node:
         """
         Get the next node to be evicted.
@@ -178,12 +169,18 @@ class BaseCache(ABC):
         Returns:
             Node: The node to evict.
         """
-        ...
+        with self._lock:
+            if isinstance(self._eviction_policy, _LFUEviction):
+                return self._lfu_eviction()
+            elif isinstance(self._eviction_policy, _LRUEviction):
+                return self._lru_eviction()
+            else:
+                raise CacheOverflowError(max_size=self._max_size)
 
     @abstractmethod
     def _update_cache_state(self, node: Node) -> None:
         """
-        This is the function that gets called whenever a node
+        This function gets called whenever a node
         is accessed in the cache. Eg. cache.get(node).
 
         Args:
@@ -213,7 +210,7 @@ class BaseCache(ABC):
                     self._update_cache_state(node)
 
                     self._stats._hits += 1
-                    self._logger.debug(f"GET key='{key}' (hit)")
+                    self.logger.debug(f"GET key='{key}' (hit)")
 
                     return node.value
 
@@ -225,11 +222,11 @@ class BaseCache(ABC):
                         self._remove_node(node)
 
                         self._stats._evictions += 1
-                        self._logger.debug(f"EVICT key='{node.key}' due to ttl")
+                        self.logger.debug(f"EVICT key='{node.key}' due to ttl")
         # The key isn't found
         except KeyNotFoundError:
             self._stats._misses += 1
-            self._logger.debug(f"GET key='{key}' (miss)")
+            self.logger.debug(f"GET key='{key}' (miss)")
 
             return None
 
@@ -316,8 +313,8 @@ class BaseCache(ABC):
                     # Create a new entry in the cache
                     node = self._add_node(key, params["value"], params["ttl"])
 
-                    self._logger.debug("SET key='%s' %s (adding new key)"
-                                       % (key, f"with ttl={node.ttl}" if node.ttl else ""))
+                    self.logger.debug("SET key='%s' %s (adding new key)"
+                                      % (key, f"with ttl={node.ttl}" if node.ttl else ""))
 
                 else:
                     # Update an existing entry
@@ -331,8 +328,8 @@ class BaseCache(ABC):
                     self._update_node(node, params)
                     self._update_cache_state(node)
 
-                    self._logger.debug("SET key='%s' %s (updating value)"
-                                       % (key, f"with ttl={node.ttl}" if node.ttl else ""))
+                    self.logger.debug("SET key='%s' %s (updating value)"
+                                      % (key, f"with ttl={node.ttl}" if node.ttl else ""))
 
                 # Evict a node if the capacity gets exceeded.
                 # Don't evict nodes if capacity is None (infinite capacity).
@@ -342,7 +339,7 @@ class BaseCache(ABC):
                     self._remove_node(node)
 
                     self._stats._evictions += 1
-                    self._logger.debug(f"EVICT key='{node.key}' due to capacity")
+                    self.logger.debug(f"EVICT key='{node.key}' due to capacity")
             else:
                 raise ReadOnlyError()
 
@@ -367,10 +364,10 @@ class BaseCache(ABC):
                 try:
                     self._remove_node(self._get_node(key))
 
-                    self._logger.debug(f"REMOVE key='{key}'")
-                except KeyError:
+                    self.logger.debug(f"REMOVE key='{key}'")
+                except KeyError as exc:
                     # Invalid key
-                    raise KeyNotFoundError(key)
+                    raise KeyNotFoundError(key) from exc
             else:
                 raise ReadOnlyError()
 
@@ -388,7 +385,7 @@ class BaseCache(ABC):
         """
         ...
 
-    def ttl(self, key: Hashable) -> Optional[Union[float, int]]:
+    def ttl(self, key: Hashable) -> Optional[Union[int, float]]:
         """
         Get the ttl (Time To Live) of the given key.
 
@@ -396,7 +393,7 @@ class BaseCache(ABC):
             key (Hashable): The key.
 
         Returns:
-            Union[float, int] or None: The key's ttl.
+            Optional[Union[int, float]]: The key's ttl.
 
         Raises:
             KeyNotFoundError: When the given key is nonexistent.
@@ -411,8 +408,8 @@ class BaseCache(ABC):
                     raise KeyExpiredError(key)
 
                 return node.ttl
-            except KeyError:
-                raise KeyNotFoundError(key)
+            except KeyError as exc:
+                raise KeyNotFoundError(key) from exc
 
     def inspect(self, key: Hashable) -> Optional[dict[str, Any]]:
         """
@@ -431,7 +428,6 @@ class BaseCache(ABC):
         """
         try:
             node: Node = self._get_node(key)
-            self._update_cache_state(node)
 
             if node.is_expired():
                 self._remove_node(node)
@@ -443,8 +439,8 @@ class BaseCache(ABC):
                 "ttl": node._expires_at
             }
 
-        except KeyError:
-            raise KeyNotFoundError(key)
+        except KeyError as exc:
+            raise KeyNotFoundError(key) from exc
 
     @abstractmethod
     def keys(self) -> tuple[Hashable]:
@@ -488,16 +484,8 @@ class BaseCache(ABC):
         def decorator(func: Callable) -> Callable:
             @wraps(func)
             def wrapper(*args, **kwargs) -> Any:
-                def _make_cache_key(args, kwargs) -> tuple[Hashable]:
-                    """
-                    Transform the args and kwargs into a hashable tuple
-                    so it can be used as a dict key. The tuple looks like:
-                    [a, b, [c, 1], [d, 2]]
-                    """
-                    kwargs_key = tuple(sorted(kwargs.items()))
-                    return tuple(args) + kwargs_key
 
-                cache_key = _make_cache_key(args, kwargs)
+                cache_key = self._make_cache_key(*args, **kwargs)
 
                 with self._lock:
                     if self.__contains__(cache_key) and not self._get_node(cache_key).is_expired():
@@ -512,66 +500,6 @@ class BaseCache(ABC):
                         return result
             return wrapper
         return decorator
-
-    def save(self, path: Union[str, Path]) -> None:
-        """
-        Save the cache as a .pkl file.
-
-        Args:
-            path (Union[str, Path]): The path to the .pkl file
-                        in which the cache will be stored.
-
-        Returns:
-            None
-
-        Raises:
-            ValueError: When the given path isn't a .pkl file.
-            TypeError: When path isn't a str or a pathlib.Path().
-        """
-        path = self._check_path_valid(path)
-
-        with self._lock:
-            try:
-                with open(path, "wb") as f:
-                    pickle.dump(self, f)
-
-                self._logger.debug(f"SAVE path='{path}'")
-            except Exception as exc:
-                raise CacheSaveError(exc) from exc
-
-    @classmethod
-    def load(cls, path: Union[str, Path]) -> Self:
-        """
-        Load a cache from a .pkl file.
-
-        Args:
-            path (Union[str, Path]): The path to the saved cache.
-
-        Returns:
-            Self: The cache object (a subclass of BaseCache).
-
-        Raises:
-            CacheLoadError: When something went wrong while reading the .pkl file.
-            CachePathError: When the given path isn't a .pkl file.
-            CachePathError: When path isn't a str or a pathlib.Path().
-        """
-        path = cls._check_path_valid(path)
-
-        try:
-            with open(path, "rb") as f:
-                obj = pickle.load(f)
-        except Exception as exc:
-            raise CacheLoadError(exc) from exc
-
-        # Check if the imported cache is of the same type
-        # as the class load() got called from.
-        # Eg. LRUCache.load() -> LRUCache
-        if not isinstance(obj, cls):
-            raise CacheLoadError(
-                f"expected instance of {cls.__name__}, "
-                f"got {obj.__class__.__name__}"
-            )
-        return obj
 
     @property
     def max_size(self) -> Optional[int]:
@@ -601,14 +529,14 @@ class BaseCache(ABC):
             if not self._read_only:
                 self._max_size = max_size
 
-                self._logger.debug(f"CHANGE max-size={max_size}")
+                self.logger.debug(f"CHANGE max-size={max_size}")
 
                 # Evict nodes if max-size gets exceeded
                 while self._max_size is not None and self.__len__() > self._max_size:
-                    least_freq_node: Node = self._get_evict_node()
-                    self._remove_node(least_freq_node)
+                    evict_node: Node = self._get_evict_node()
+                    self._remove_node(evict_node)
 
-                    self._logger.debug(f"EVICT key='{least_freq_node.key}' \
+                    self.logger.debug(f"EVICT key='{evict_node.key}' \
                                     due to max-size")
             else:
                 raise ReadOnlyError()
@@ -639,17 +567,17 @@ class BaseCache(ABC):
             raise CacheConfigurationError("Verbose should be of type: bool.")
 
         if verbose:
-            self._logger.setLevel(logging.DEBUG)
+            self.logger.setLevel(logging.DEBUG)
 
             # Check if there isn't a handler yet.
             # If not, then add handler, so it doesn't overwrite logging.basicConfig
-            if not self._logger.handlers:
+            if not self.logger.handlers:
                 handler = logging.StreamHandler()
                 formatter = logging.Formatter("%(asctime)s [%(levelname)s] %(name)s: %(message)s")
                 handler.setFormatter(formatter)
-                self._logger.addHandler(handler)
+                self.logger.addHandler(handler)
         else:
-            self._logger.setLevel(logging.WARNING)
+            self.logger.setLevel(logging.WARNING)
 
     def set_read_only(self, read_only: bool) -> None:
         """
@@ -739,7 +667,7 @@ class BaseCache(ABC):
         try:
             state = self.__dict__.copy()
             del state["_lock"]
-            del state["_cleanup_thread"]
+            del state["cleanup_thread"]
 
             return state
 
@@ -763,8 +691,11 @@ class BaseCache(ABC):
                 self._lock = NullContext()
 
             # Add the cleanup thread
-            self._cleanup_thread: _CleanupThread = _CleanupThread(self)
-            self._cleanup_thread.start()
+            if self.__class__.__name__ == "MemoryCache":
+                self.cleanup_thread: CleanupThread = MemoryCleanupThread(self, self._cleanup_thread_interval)
+            elif self.__class__.__name__ == "DiskCache":
+                self.cleanup_thread: CleanupThread = DiskCleanupThread(self, self._cleanup_thread_interval)
+            self.cleanup_thread.start()
 
         except Exception as exc:
             raise DeserializationError(exc) from exc
@@ -830,15 +761,15 @@ class BaseCache(ABC):
             raise CacheConfigurationError(f"max_size should be a non-negative int or None, got {max_size!r}")
 
     @staticmethod
-    def _check_path_valid(path: Union[str, Path]) -> bool:
+    def _check_path_valid(path: Union[str, Path], suffix: str) -> Path:
         # Convert str to pathlib.Path
         if isinstance(path, str):
             path = Path(path)
         elif not isinstance(path, Path):
             raise CachePathError(f"'path' must be a str or Path, got {type(path).__name__}")
 
-        if path.suffix != ".pkl":
-            raise CachePathError(f"expected a '.pkl' file, got '{path.suffix}': {path.name}")
+        if path.suffix != suffix:
+            raise CachePathError(f"expected a '{suffix}' file, got '{path.suffix}': {path.name}")
 
         return path
 
@@ -938,43 +869,3 @@ class Stats:
             f"evictions={self._evictions!r}, size={self.size!r}, "
             f"max-size={self.max_size!r}, uptime={self.uptime!r}s)"
         )
-
-
-class _CleanupThread(Thread):
-    """
-    A thread that ensures that expired keys get evicted.
-    """
-    __slots__ = ["_cache_obj", "interval", "_stop_event"]
-
-    def __init__(self, cache: BaseCache, interval: float = 1.0):
-        super().__init__(daemon=True)
-
-        self._cache_obj = cache
-        self.interval = interval
-        self._stop_event = Event()
-
-    def run(self) -> None:
-        while not self._stop_event.is_set():
-            self.cleanup()
-            self._stop_event.wait(self.interval)
-
-    def stop(self) -> None:
-        self._stop_event.set()
-
-    def cleanup(self) -> None:
-        """
-        Check for expired nodes and remove them from the cache.
-        """
-        expired_nodes = []
-
-        # Check for expired nodes
-        for node in self._cache_obj._cache.values():
-            if node.is_expired():
-                expired_nodes.append(node)
-
-        # Evict the found expired nodes
-        for node in expired_nodes:
-            self._cache_obj._remove_node(node)
-
-            self._cache_obj._stats._evictions += 1
-            self._cache_obj._logger.debug(f"EVICT key='{node.key}' due to ttl")

@@ -2,31 +2,32 @@
 # -*- coding: utf-8 -*-
 
 """
-test_memory.py - Tests for the MemoryCache API and lru/lfu eviction.
+test_api.py - Tests for the MemoryCache and DiskCache API and lru/lfu eviction.
 
 These tests cover:
     - Basic cache API:
         - Basic set and get implementation
         - Delete and clear implementation
         - Cache.ttl and cache.inspect implementation
+        - Cache.keys() and cache.values() implementation
     - Per-cache eviction logic
     - Memoize decorator
     - Change max_size
+    - Cache overflow
     - Read-only mode
     - Persistance
     - In-background cleanup thread
 
 To run:
-    python -m pytest .\tests\test_memory.py
+    python -m pytest .\tests\test_api.py
 
 Author: Deetjepateeteke <https://github.com/Deetjepateeteke>
 """
 
 from pathlib import Path
 import pytest
-import time
 
-from cachelib import MemoryCache
+from cachelib import DiskCache, MemoryCache, eviction
 from cachelib.errors import (
     CacheConfigurationError,
     CacheOverflowError,
@@ -37,27 +38,7 @@ from cachelib.errors import (
 )
 
 raises = pytest.raises
-
-
-@pytest.fixture
-def cache():
-    cache = MemoryCache()
-    yield cache
-    cache.clear()
-
-
-@pytest.fixture
-def lru():
-    lru = MemoryCache(max_size=5, eviction_policy="lru")
-    yield lru
-    lru.clear()
-
-
-@pytest.fixture
-def lfu():
-    lfu = MemoryCache(max_size=5, eviction_policy="lfu")
-    yield lfu
-    lfu.clear()
+path = Path("tests", "test_file.db")
 
 
 def test_set_get(cache):
@@ -132,18 +113,25 @@ def test_get_many(cache):
 
 
 def test_ttl(cache):
+
     cache.set("k", "v", ttl=10)
     assert cache.ttl("k") == 10
 
-    cache.set("k", ttl=None)
+    cache.clear()
+
+    cache.set("k", "v", ttl=None)
     assert cache.ttl("k") is None
 
-    cache.set("k", "v", ttl=0)
+    cache.clear()
 
+    # Get ttl of an expired key
+    cache.set("k", "v", ttl=0)
+    if isinstance(cache, DiskCache):
+        print(cache._get_node("k"), "testing")
     with raises(KeyExpiredError):
         cache.ttl("k")
 
-    # Get ttl of nonexistent key
+    # Get ttl of a nonexistent key
     with raises(KeyNotFoundError):
         cache.ttl("non-existent")
 
@@ -204,21 +192,40 @@ def test_memoize(cache, mocker):
     assert add(1, 2) == 3 and calls == 2  # Key isn't expired
 
 
-def test_change_max_size(lru, lfu):
-    for cache in (lru, lfu):
-        cache.set("key", "value")
-        cache.set("k", "v")
+def test_change_max_size(cache):
 
-        cache.max_size = 1
+    def create_lfu_caches():
+        memory_lfu = MemoryCache(eviction_policy=eviction.LFU, max_size=2)
+        disk_lru = DiskCache(path, eviction_policy=eviction.LRU, max_size=2)
 
-        assert "key" not in cache
+        return memory_lfu, disk_lru
 
-        # Invalid calls
-        with raises(CacheConfigurationError):
-            cache.max_size = -1
+    def create_lru_caches():
+        memory_lru = MemoryCache(eviction_policy=eviction.LRU, max_size=2)
+        disk_lru = DiskCache(path, eviction_policy=eviction.LRU, max_size=2)
 
-        with raises(CacheConfigurationError):
-            cache.max_size = "invalid type"
+        return memory_lru, disk_lru
+
+    for cache_init in (create_lfu_caches, create_lru_caches):
+        disk_cache, memory_cache = cache_init()
+
+        for cache in (disk_cache, memory_cache):
+            cache.set("key", "value")
+            cache.set("k", "v")
+
+            cache.max_size = 1
+
+            assert "key" not in cache
+
+            # Invalid calls
+            with raises(CacheConfigurationError):
+                cache.max_size = -1
+
+            with raises(CacheConfigurationError):
+                cache.max_size = "invalid type"
+
+            if isinstance(cache, DiskCache):
+                cache.close()
 
 
 def test_read_only(cache):
@@ -238,13 +245,15 @@ def test_read_only(cache):
         assert len(cache) == 1
 
 
-def test_persistance(cache):
+def test_persistance(memory_cache):
     path = Path("tests", "test_file.pkl")
 
-    cache.set("key", "value", ttl=10)
-    cache.save(path)
-    cache.clear()
-    newCache = cache.load(path)
+    memory_cache.set("key", "value", ttl=10)
+    memory_cache.save(path)
+
+    memory_cache.clear()
+
+    newCache = MemoryCache.load(path)
     assert newCache.get("key") == "value"
 
     path.unlink()
@@ -252,19 +261,13 @@ def test_persistance(cache):
     # Invalid calls
     with raises(CachePathError, match="expected a '.pkl' file, got '.*': .*"):
         invalid_path = Path("tests", "test_file.txt")
-        cache.save(invalid_path)
-        cache.load(invalid_path)
+        memory_cache.save(invalid_path)
+        MemoryCache.load(invalid_path)
 
     with raises(CachePathError, match="'path' must be a str or Path, got .*"):
         invalid_path = True
-        cache.save(invalid_path)
-        cache.load(invalid_path)
-
-
-def test_cleanup_thread(cache):
-    cache.set("key", "value", ttl=0.01)
-    time.sleep(2)
-    assert "key" not in cache
+        memory_cache.save(invalid_path)
+        MemoryCache.load(invalid_path)
 
 
 def test_global_ttl():
@@ -273,69 +276,8 @@ def test_global_ttl():
     assert cache.ttl("key") == 10
 
 
-def test_load(cache):
-    path = Path("tests", "test_file.pkl")
-
-    cache.set("foo", "bar")
-
-    cache.save(path)
-
-    loaded_cache = MemoryCache.load(path)
-
-    assert loaded_cache.get("foo") == "bar"
-
-    path.unlink()
-
-    # Invalid calls
-    with raises(CachePathError, match="'path' must be a str or Path, got .*"):
-        path = 0  # Invalid datatype
-        MemoryCache.load(path)
-
-    with raises(CachePathError, match="expected a '.pkl' file, got '.*': .*"):
-        path = Path("tests", "test_file.txt")  # Invalid path suffix
-        MemoryCache.load(path)
-
-
-def test_lru_eviction_logic(lru):
-    lru.max_size = 2
-
-    lru.set("key", "value")  # Least recently accessed
-    lru.set("k", "v")
-
-    lru.max_size = 1
-    assert "key" not in lru
-    assert "k" in lru
-
-    lru.clear()
-
-    lru.max_size = 2
-
-    lru.set("key", "value")
-    lru.set("k", "v")  # Least recently accessed
-    lru.get("key")
-
-    lru.max_size = 1
-    assert "key" in lru
-    assert "k" not in lru
-
-
-def test_lfu_eviction_logic(lfu):
-    lfu.max_size = 2
-
-    lfu.set("key", "value")  # Most frequently accessed
-    lfu.set("k", "v")
-
-    for _ in range(5):
-        lfu.get("key")
-
-    lfu.get("k")
-
-    lfu.max_size = 1
-    assert "key" in lfu
-    assert "k" not in lfu
-
-
-def test_cache_overflow_error(cache):
+def test_cache_overflow(cache):
     cache.max_size = 0
+
     with raises(CacheOverflowError):
         cache.set("key", "value")

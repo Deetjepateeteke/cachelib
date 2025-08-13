@@ -12,10 +12,18 @@ Classes:
 Author: Deetjepateeteke <https://github.com/Deetjepateeteke>
 """
 
-from typing import Any, Hashable, Optional, Union
+from pathlib import Path
+import pickle
+from typing import Any, Hashable, Optional, Self, Union
 
 from .base import BaseCache
-from .errors import CacheOverflowError, KeyNotFoundError, ReadOnlyError
+from .errors import (
+    CacheLoadError,
+    CacheSaveError,
+    KeyNotFoundError,
+    ReadOnlyError
+)
+from .eviction import EvictionPolicy, _LFUEviction
 from .node import Node
 
 
@@ -29,7 +37,7 @@ class MemoryCache(BaseCache):
     def __init__(self,
                  name: str = "",
                  max_size: Optional[int] = None,
-                 eviction_policy: str = "",
+                 eviction_policy: Optional[EvictionPolicy] = None,
                  ttl: Optional[Union[int, float]] = None,
                  verbose: bool = False,
                  thread_safe: bool = True
@@ -42,9 +50,9 @@ class MemoryCache(BaseCache):
             max_size (Optional[int]): The maximum amount of entries that
                 fit in the cache.
             eviction_policy (str): The eviction policy to use:
-                - '': No eviction
-                - 'lru': Least Recently Used
-                - 'lfu': Least Frequently Used
+                - None: No eviction
+                - cachelib.eviction.LRU: Least Recently Used
+                - cachelib.eviction.LFU: Least Frequently Used
             ttl (Optional[Union[int, float]]): The default ttl of every entry
                 in the cache.
             verbose (bool): Debug mode
@@ -61,42 +69,44 @@ class MemoryCache(BaseCache):
 
         self._cache: dict[Hashable, Any] = {}
 
-        if self._eviction_policy == "lfu":
+        if isinstance(self._eviction_policy, _LFUEviction):
             # Used to hold track of access frequency in LFU
             self._access_freq: dict[Hashable, int] = {}
 
-        if self._eviction_policy in ("lfu", "lru"):
-            # Use a linked list to track recency
+        # Use a linked list to track recency
+        if isinstance(self._eviction_policy, EvictionPolicy):
             self._head: Node = Node(None, None)
             self._tail: Node = Node(None, None)
 
             self._head.next = self._tail
             self._tail.prev = self._head
 
-        # Start in-background cleanup thread
-        self._cleanup_thread.start()
-        self._logger.info(f"Initialized {self.__class__.__name__} with eviction-policy={self._eviction_policy}")
+        # Initialize self.cleanup_thread
+        self._create_cleanup_thread()
+
+        self.logger.info(f"Initialized {self.__class__.__name__} with eviction-policy={self._eviction_policy}")
 
     def _add_node(self,
                   key: Hashable,
                   value: Any,
-                  ttl: Optional[Union[int, float]]
-                  ) -> Node:
+                  ttl: Optional[Union[int, float]]) -> Node:
         with self._lock:
-            # Create a node
+
+            # Create a new node
             node: Node = Node(key, value, ttl)
 
             # Store in cache
             self._cache[key] = node
 
-            if self._eviction_policy in ("lfu", "lru"):
+            if isinstance(self._eviction_policy, EvictionPolicy):
                 # Update linked list
                 node.prev = self._head
                 node.next = self._head.next
                 self._head.next.prev = node
                 self._head.next = node
 
-            if self._eviction_policy == "lfu":
+            if isinstance(self._eviction_policy, _LFUEviction):
+                # Initialize frequency table
                 self._access_freq[key] = 0
 
             return node
@@ -111,9 +121,6 @@ class MemoryCache(BaseCache):
                 node.ttl = params["ttl"]
 
     def _get_node(self, key: Hashable) -> Node:
-        # When the requested node doesn't exist,
-        # it will raise a KeyNotFoundError that will be handled
-        # by BaseCache.get() by returning None.
         with self._lock:
             try:
                 return self._cache[key]
@@ -126,32 +133,23 @@ class MemoryCache(BaseCache):
             # Remove node from cache
             del self._cache[node.key]
 
-            if self._eviction_policy in ("lfu", "lru"):
+            if isinstance(self._eviction_policy, EvictionPolicy):
                 # Remove node from liked list
                 node.prev.next = node.next
                 node.next.prev = node.prev
                 node.prev = node.next = None
 
-            if self._eviction_policy == "lfu":
+            if isinstance(self._eviction_policy, _LFUEviction):
                 del self._access_freq[node.key]
-
-    def _get_evict_node(self) -> Node:
-        with self._lock:
-            if self._eviction_policy == "lfu":
-                return self._lfu_eviction()
-            elif self._eviction_policy == "lru":
-                return self._lru_eviction()
-            else:
-                raise CacheOverflowError(max_size=self._max_size)
 
     def _update_cache_state(self, node: Node) -> None:
         with self._lock:
             # Update the node's access frequency
-            if self._eviction_policy == "lfu":
+            if isinstance(self._eviction_policy, _LFUEviction):
                 self._access_freq[node.key] += 1
 
             # Place the node at the start of the linked list
-            if self._eviction_policy in ("lfu", "lru"):
+            if isinstance(self._eviction_policy, EvictionPolicy):
                 # Remove node
                 node.prev.next = node.next
                 node.next.prev = node.prev
@@ -168,22 +166,93 @@ class MemoryCache(BaseCache):
             if not self._read_only:
                 self._cache = {}
 
-                # Only LFUCache has a _lookup_freq table
                 if self.__class__.__name__ == "LFUCache":
-                    self._lookup_freq = {}
+                    self._access_freq = {}
 
                 self._head = self._tail = Node(None, None)
                 self._head.next = self._tail
                 self._tail.prev = self._head
 
-                self._logger.debug("CLEAR CACHE")
+                self.logger.debug("CLEAR CACHE")
             else:
                 raise ReadOnlyError()
+
+    def keys(self) -> tuple[Hashable]:
+        with self._lock:
+            return tuple(self._cache.keys())
+
+    def values(self) -> tuple[Any]:
+        with self._lock:
+            nodes = tuple(self._cache.values())
+            return tuple(map(lambda node: node.value, nodes))
+
+    def save(self, path: Union[str, Path]) -> None:
+        """
+        Save the cache as a .pkl file.
+
+        Args:
+            path (Union[str, Path]): The path to the .pkl file
+                        in which the cache will be stored.
+
+        Returns:
+            None
+
+        Raises:
+            ValueError: When the given path isn't a .pkl file.
+            TypeError: When path isn't a str or a pathlib.Path().
+        """
+        path = self._check_path_valid(path, suffix=".pkl")
+
+        with self._lock:
+            try:
+                with open(path, "wb") as f:
+                    pickle.dump(self, f)
+
+                self.logger.debug(f"SAVE path='{path}'")
+            except Exception as exc:
+                raise CacheSaveError(exc) from exc
+
+    @classmethod
+    def load(cls, path: Union[str, Path]) -> Self:
+        """
+        Load a cache from a .pkl file.
+
+        Args:
+            path (Union[str, Path]): The path to the saved cache.
+
+        Returns:
+            Self: The cache object (a subclass of BaseCache).
+
+        Raises:
+            CacheLoadError: When something went wrong while reading the .pkl file.
+            CachePathError: When the given path isn't a .pkl file.
+            CachePathError: When path isn't a str or a pathlib.Path().
+        """
+        path = cls._check_path_valid(path, suffix=".pkl")
+
+        try:
+            with open(path, "rb") as f:
+                obj = pickle.load(f)
+        except Exception as exc:
+            raise CacheLoadError(exc) from exc
+
+        # Check if the imported cache is of the same type
+        # as the class load() got called from.
+        # Eg. LRUCache.load() -> LRUCache
+        if not isinstance(obj, cls):
+            raise CacheLoadError(
+                f"expected instance of {cls.__name__}, "
+                f"got {obj.__class__.__name__}"
+            )
+        return obj
+
+    def __len__(self) -> int:
+        return len(self._cache)
 
     def _lru_eviction(self) -> Node:
         """
         LRU (Least Recently Used) eviction.
-        This is the eviction method called when eviction_policy='lru'.
+        This is the eviction method called when eviction_policy=cachelib.eviction.LRU.
         """
         with self._lock:
             current_node = self._tail.prev
@@ -195,7 +264,7 @@ class MemoryCache(BaseCache):
     def _lfu_eviction(self) -> Node:
         """
         LFU (Least Frequently Used) eviction.
-        This is the eviction method called when eviction_policy='lfu'.
+        This is the eviction method called when eviction_policy=cachelib.eviction.LFU.
         """
         with self._lock:
             # Sort the keys by frequency in ascending order
@@ -222,14 +291,12 @@ class MemoryCache(BaseCache):
                 return current_node
             return self._get_node(least_freq_keys[0])
 
-    def keys(self) -> tuple[Hashable]:
-        with self._lock:
-            return tuple(self._cache.keys())
-
-    def values(self) -> tuple[Any]:
-        with self._lock:
-            nodes = tuple(self._cache.values())
-            return tuple(map(lambda node: node.value, nodes))
-
-    def __len__(self) -> int:
-        return len(self._cache)
+    @staticmethod
+    def _make_cache_key(*args: tuple, **kwargs: dict) -> tuple[Hashable]:
+        """
+        Transform the args and kwargs into a hashable tuple
+        so it can be used as a key in a hashtable. The tuple looks like:
+        (a, b, (c, 1), (d, 2))
+        """
+        kwargs_key = tuple(sorted(kwargs.items()))
+        return tuple(args) + kwargs_key

@@ -18,6 +18,8 @@ from typing import Any, Hashable, Optional, Union, Self
 
 from .errors import CacheConfigurationError
 
+__all__ = ["Node"]
+
 
 class Node:
     """
@@ -61,7 +63,7 @@ class Node:
             bool: Return True if the node is expired; otherwise False.
         """
         if self._expires_at is not None:
-            return time.time() > self._expires_at
+            return time.time() >= self._expires_at
         return False  # no ttl, so never expired
 
     def reset_expires_at(self) -> None:
