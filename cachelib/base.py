@@ -34,8 +34,8 @@ from .errors import (
     SerializationError
 )
 from .eviction import EvictionPolicy, _LFUEviction, _LRUEviction
-from .utils import NullContext
 from .node import Node
+from .utils import NullContext
 
 __all__ = ["BaseCache", "Stats"]
 
