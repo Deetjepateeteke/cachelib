@@ -136,6 +136,18 @@ class DiskCache(BaseCache):
         with self._get_cursor() as cursor:
             cursor.execute(self.CACHE_CREATION_QUERY)
 
+    @staticmethod
+    def _create_node(key: Hashable,
+                     value: Any,
+                     ttl: Optional[Union[int, float]],
+                     expires_at: float) -> Node:
+        """ Function to create a node. """
+        node = Node(key, value, ttl)
+        node._expires_at = expires_at
+
+        return node
+
+
     def _add_node(self,
                   key: Hashable,
                   value: Any,
@@ -145,10 +157,7 @@ class DiskCache(BaseCache):
             expires_at = None if ttl is None else time.time() + ttl
             cursor.execute(self.SET_QUERY, (key, value, ttl, expires_at, time.time()))
 
-        node = Node(key, value, ttl)
-        node._expires_at = expires_at
-
-        return node
+        return self._create_node(key, value, ttl, expires_at)
 
     def _update_node(self, node: Node, params: dict) -> None:
 
@@ -165,8 +174,7 @@ class DiskCache(BaseCache):
         with self._get_cursor() as cursor:
             cursor.execute(self.UPDATE_QUERY, (value, ttl, expires_at, node.key))
 
-        node = Node(node.key, value, ttl)
-        node._expires_at = expires_at
+        return self._create_node(node.key, value, ttl, expires_at)
 
     def _get_node(self, key: Hashable) -> Node:
         with self._get_cursor() as cursor:
@@ -175,10 +183,7 @@ class DiskCache(BaseCache):
             try:
                 value, ttl, expires_at = cursor.fetchone()
 
-                node = Node(key, value, ttl)
-                node._expires_at = expires_at
-
-                return node
+                return self._create_node(key, value, ttl, expires_at)
             except TypeError as exc:
                 raise KeyNotFoundError(key) from exc
 
@@ -247,10 +252,7 @@ class DiskCache(BaseCache):
                     cursor.execute(query, (time.time(),))
                     key, value, ttl, expires_at = cursor.fetchone()
 
-                    node = Node(key, value, ttl)
-                    node._expires_at = expires_at
-
-                    return node
+                    return self._create_node(key, value, ttl, expires_at)
         return get_least_recently_used_node()
 
     def _lfu_eviction(self) -> Node:
@@ -272,10 +274,7 @@ class DiskCache(BaseCache):
                     cursor.execute(query, (time.time(),))
                     key, value, ttl, expires_at = cursor.fetchone()
 
-                    node = Node(key, value, ttl)
-                    node._expires_at = expires_at
-
-                    return node
+                    return self._create_node(key, value, ttl, expires_at)
         return get_least_frequently_used_node()
 
     @contextmanager
