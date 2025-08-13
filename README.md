@@ -17,7 +17,7 @@ cd cachelib
 
 ## Features
 
-- In-memory cache/On-disk cache
+- In-memory cache and on-disk cache
 - TTL support
 - LRU/LFU eviction
 - Thread-safe
