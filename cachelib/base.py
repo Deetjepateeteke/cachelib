@@ -79,14 +79,13 @@ class BaseCache(ABC):
         if isinstance(eviction_policy, (EvictionPolicy, type(None))):
             if max_size is None and isinstance(eviction_policy, EvictionPolicy):
                 raise CacheConfigurationError("can only set eviction_policy when max_size is not infinite")
-            else:
-                self._eviction_policy: EvictionPolicy = eviction_policy
         else:
             raise CacheConfigurationError(
                 f"Eviction policy must be of type "
                 f"{EvictionPolicy.__module__}.{EvictionPolicy.__qualname__}"
                 f", got {type(eviction_policy).__name__}"
             )
+        self._eviction_policy: EvictionPolicy = eviction_policy
 
         self.set_verbose(verbose)
 

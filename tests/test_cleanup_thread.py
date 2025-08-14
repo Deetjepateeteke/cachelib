@@ -27,14 +27,17 @@ def test_cleanup_thread(cache):
     time.sleep(2)
     assert "key" not in cache
 
-    cache.cleanup_thread.interval = 10
+    cache.cleanup_thread.set_interval(10)
     cache.set("key", "value", ttl=0.1)
     assert "key" in cache
 
 
 def test_invalid_calls(cache):
     with raises(CleanupThreadConfigurationError):
-        cache.cleanup_thread.interval = "1"
+        cache.cleanup_thread.interval = 1
 
     with raises(CleanupThreadConfigurationError):
-        cache.cleanup_thread.interval = -1
+        cache.cleanup_thread.set_interval(interval="1")
+
+    with raises(CleanupThreadConfigurationError):
+        cache.cleanup_thread.set_interval(interval=-1)

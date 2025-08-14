@@ -14,6 +14,9 @@ from cachelib import DiskCache, MemoryCache
 
 path = Path("tests", "test_file.db")
 
+# Delete the path's contents, if the path exists.
+if path.exists():
+    path.unlink()
 
 @pytest.fixture
 def memory_cache():

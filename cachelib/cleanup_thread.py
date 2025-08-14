@@ -12,7 +12,7 @@ Author: Deetjepateeteke <https://github.com/Deetjepateeteke>
 from abc import ABC, abstractmethod
 import sqlite3 as sqlite
 from threading import Event, Thread
-from typing import Union
+from typing import NoReturn, Union
 
 from .errors import CleanupThreadConfigurationError
 from .node import Node
@@ -31,7 +31,7 @@ class CleanupThread(ABC, Thread):
         super().__init__(daemon=True)
 
         self._cache = cache
-        self.interval: float = interval  # Run the @interval.setter method
+        self.set_interval(interval)  # Initialize self._interval
         self._stop_event = Event()
 
     def run(self) -> None:
@@ -62,7 +62,19 @@ class CleanupThread(ABC, Thread):
         return self._interval
 
     @interval.setter
-    def interval(self, interval: Union[int, float]) -> None:
+    def interval(self, _) -> NoReturn:
+        raise CleanupThreadConfigurationError("To change a cleanup thread's interval, use set_interval() instead")
+
+    def set_interval(self, interval: Union[int, float]) -> None:
+        """
+        Change the cleanup thread's interval.
+
+        Args:
+            interval (Union[int, float]): The new interval (in seconds)
+
+        Returns:
+            None
+        """
         # Check for a valid interval value
         if not isinstance(interval, (int, float)):
             self.stop()
@@ -76,6 +88,8 @@ class CleanupThread(ABC, Thread):
 
 
 class MemoryCleanupThread(CleanupThread):
+
+    __slots__ = ["_cache", "_interval", "_stop_event"]
 
     def cleanup(self) -> None:
         with self._cache._lock:
@@ -96,6 +110,8 @@ class MemoryCleanupThread(CleanupThread):
 
 
 class DiskCleanupThread(CleanupThread):
+
+    __slots__ = ["_cache", "_interval", "_stop_event"]
 
     def cleanup(self) -> None:
         with self._cache._lock:

@@ -140,13 +140,12 @@ class DiskCache(BaseCache):
     def _create_node(key: Hashable,
                      value: Any,
                      ttl: Optional[Union[int, float]],
-                     expires_at: float) -> Node:
+                     expires_at: Optional[float]) -> Node:
         """ Function to create a node. """
         node = Node(key, value, ttl)
         node._expires_at = expires_at
 
         return node
-
 
     def _add_node(self,
                   key: Hashable,

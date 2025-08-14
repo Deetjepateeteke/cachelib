@@ -39,7 +39,7 @@ def test_thread_safety_memory_cache():
     assert len(cache) == 10000
 
 
-def test_thread_safery_disk_cache():
+def test_thread_safety_disk_cache():
     path = Path("tests", "test_file.db")
 
     def set_item():
@@ -63,5 +63,6 @@ def test_thread_safery_disk_cache():
     assert len(cache) == 1000
 
     cache.close()
-    if path.exists():
-        path.unlink()
+    with cache._lock:
+        if path.exists():
+            path.unlink()
