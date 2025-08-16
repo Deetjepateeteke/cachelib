@@ -15,10 +15,15 @@ Author: Deetjepateeteke <https://github.com/Deetjepateeteke>
 __all__ = ["EvictionPolicy", "LRU", "LFU"]
 
 
-class EvictionPolicy(): ...  # The master eviction policy class
+class EvictionPolicy():  # The master eviction policy class
+    __slots__ = ()
 
-class _LRUEviction(EvictionPolicy): ...
-class _LFUEviction(EvictionPolicy): ...
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__}>"
+
+
+class _LRUEviction(EvictionPolicy): __slots__ = ()
+class _LFUEviction(EvictionPolicy): __slots__ = ()
 
 
 LRU: EvictionPolicy = _LRUEviction()
