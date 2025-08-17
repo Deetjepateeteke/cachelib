@@ -18,7 +18,8 @@ __all__ = [
     "CacheError",
     "KeyErrorBase",
     "CachePersistenceErrorBase",
-    "SerializationError",
+    "SerializationErrorBase",
+    "CleanupThreadErrorBase",
     "CacheConfigurationError",
     "CleanupThreadConfigurationError",
     "CacheOverflowError",
@@ -27,7 +28,7 @@ __all__ = [
     "KeyExpiredError",
     "CacheLoadError",
     "CacheSaveError",
-    "CachePathError",
+    "PathError",
     "SerializationError",
     "DeserializationError"
 ]
@@ -39,9 +40,10 @@ class KeyErrorBase(CacheError): ...
 class CachePersistenceErrorBase(CacheError): ...
 class SerializationErrorBase(CacheError): ...
 
+class CleanupThreadErrorBase(CacheError): ...
 
 class CacheConfigurationError(CacheError): ...
-class CleanupThreadConfigurationError(CacheError): ...
+class CleanupThreadConfigurationError(CleanupThreadErrorBase): ...
 
 class CacheOverflowError(CacheError):
     """Raised when the cache is full and no eviction policy is available."""
@@ -73,9 +75,10 @@ class KeyExpiredError(KeyErrorBase):
         super().__init__(msg)
 
 
+class PathError(CacheError): ...
+
 class CacheLoadError(CachePersistenceErrorBase): ...
 class CacheSaveError(CachePersistenceErrorBase): ...
-class CachePathError(CachePersistenceErrorBase): ...
 
 
 class SerializationError(SerializationErrorBase): ...
