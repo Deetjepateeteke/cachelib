@@ -31,7 +31,7 @@ from cachelib import DiskCache, MemoryCache, eviction
 from cachelib.errors import (
     CacheConfigurationError,
     CacheOverflowError,
-    CachePathError,
+    PathError,
     KeyExpiredError,
     KeyNotFoundError,
     ReadOnlyError
@@ -41,7 +41,7 @@ raises = pytest.raises
 path = Path("tests", "test_file.db")
 
 
-def test_set_get(cache):
+def test_set_and_get(cache):
     cache.set("key", "value")
     assert cache.get("key") == "value"
 
@@ -109,7 +109,7 @@ def test_get_many(cache):
     cache.set("key", "value")
     cache.set("k", "v")
 
-    assert cache.get_many(("key", "k")) == {"key": "value", "k": "v"}
+    assert cache.get_many(("key", "k")) == ("value", "v")
 
 
 def test_ttl(cache):
@@ -126,8 +126,6 @@ def test_ttl(cache):
 
     # Get ttl of an expired key
     cache.set("k", "v", ttl=0)
-    if isinstance(cache, DiskCache):
-        print(cache._get_node("k"), "testing")
     with raises(KeyExpiredError):
         cache.ttl("k")
 
@@ -137,7 +135,7 @@ def test_ttl(cache):
 
 
 def test_inspect(cache, mocker):
-    mock_obj = mocker.patch("cachelib.base.time.time", return_value=0)
+    mock_obj = mocker.patch("cachelib.caches.base.time.time", return_value=0)
 
     # Not expired key
     cache.set("k", "v", ttl=10)
@@ -173,7 +171,7 @@ def test_keys_and_values(cache):
 
 
 def test_memoize(cache, mocker):
-    mock_obj = mocker.patch("cachelib.base.time.time", return_value=0)
+    mock_obj = mocker.patch("cachelib.caches.base.time.time", return_value=0)
 
     calls = 0
 
@@ -185,6 +183,8 @@ def test_memoize(cache, mocker):
 
     assert add(1, 2) == 3 and calls == 1
     assert add(1, 2) == 3 and calls == 1  # Key isn't expired
+
+    print(cache.keys())
 
     mock_obj.return_value = 1.1
 
@@ -259,12 +259,12 @@ def test_persistance(memory_cache):
     path.unlink()
 
     # Invalid calls
-    with raises(CachePathError, match="expected a '.pkl' file, got '.*': .*"):
+    with raises(PathError, match="expected a '.pkl' file, got '.*': .*"):
         invalid_path = Path("tests", "test_file.txt")
         memory_cache.save(invalid_path)
         MemoryCache.load(invalid_path)
 
-    with raises(CachePathError, match="'path' must be a str or Path, got .*"):
+    with raises(PathError, match="'path' must be a str or Path, got .*"):
         invalid_path = True
         memory_cache.save(invalid_path)
         MemoryCache.load(invalid_path)
@@ -276,8 +276,9 @@ def test_global_ttl():
     assert cache.ttl("key") == 10
 
 
-def test_cache_overflow(cache):
-    cache.max_size = 0
+def test_cache_overflow(disk_cache, memory_cache):
+    for cache in (disk_cache, memory_cache):
+        cache.max_size = 0
 
-    with raises(CacheOverflowError):
-        cache.set("key", "value")
+        with raises(CacheOverflowError):
+            cache.set("key", "value")

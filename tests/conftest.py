@@ -7,20 +7,20 @@ conftest.py - Defines pytest fixtures.
 Author: Deetjepateeteke <https://github.com/Deetjepateeteke>
 """
 
-from pathlib import Path
 import pytest
 
-from cachelib import DiskCache, MemoryCache
+from tests.utils import (
+    create_disk_cache,
+    create_inclusive_multi_level_cache,
+    create_memory_cache,
+    create_exclusive_multi_level_cache,
+    teardown_cache
+)
 
-path = Path("tests", "test_file.db")
-
-# Delete the path's contents, if the path exists.
-if path.exists():
-    path.unlink()
 
 @pytest.fixture
 def memory_cache():
-    memory_cache: MemoryCache = MemoryCache()
+    memory_cache = create_memory_cache()
 
     try:
         yield memory_cache
@@ -31,18 +31,34 @@ def memory_cache():
 
 @pytest.fixture
 def disk_cache():
-    disk_cache: DiskCache = DiskCache(path=path)
+    disk_cache = create_disk_cache()
 
     try:
         yield disk_cache
     finally:
-        with disk_cache._lock:
-            disk_cache.clear()
-            disk_cache.close()
-            if path.exists():
-                path.unlink()
+        teardown_cache(disk_cache)
 
 
-@pytest.fixture(params=["memory_cache", "disk_cache"])
+@pytest.fixture
+def inclusive_mlc():
+    multi_level_cache = create_inclusive_multi_level_cache()
+
+    try:
+        yield multi_level_cache
+    finally:
+        teardown_cache(multi_level_cache)
+
+
+@pytest.fixture
+def exclusive_mlc():
+    multi_level_cache = create_exclusive_multi_level_cache()
+
+    try:
+        yield multi_level_cache
+    finally:
+        teardown_cache(multi_level_cache)
+
+
+@pytest.fixture(params=["disk_cache", "memory_cache", "inclusive_mlc", "exclusive_mlc"])
 def cache(request):
     return request.getfixturevalue(request.param)

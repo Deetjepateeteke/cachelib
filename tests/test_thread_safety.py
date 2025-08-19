@@ -10,15 +10,14 @@ To run:
 Author: Deetjepateeteke <https://github.com/Deetjepateeteke>
 """
 
-from pathlib import Path
 import threading
 import uuid
 
-from cachelib import DiskCache, MemoryCache
+from tests.utils import create_disk_cache, create_memory_cache, teardown_cache
 
 
 def test_thread_safety_memory_cache():
-    cache = MemoryCache()
+    cache = create_memory_cache()
 
     def set_item():
         for _ in range(500):
@@ -40,10 +39,9 @@ def test_thread_safety_memory_cache():
 
 
 def test_thread_safety_disk_cache():
-    path = Path("tests", "test_file.db")
 
     def set_item():
-        cache = DiskCache(path)
+        cache = create_disk_cache()
         for _ in range(100):
             key = str(uuid.uuid4())
             cache.set(key, "")
@@ -59,10 +57,7 @@ def test_thread_safety_disk_cache():
     for t in threads:
         t.join()
 
-    cache = DiskCache(path)
+    cache = create_disk_cache()
     assert len(cache) == 1000
 
-    cache.close()
-    with cache._lock:
-        if path.exists():
-            path.unlink()
+    teardown_cache(cache)

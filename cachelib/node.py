@@ -33,7 +33,7 @@ class Node:
         - prev
         - next
     """
-    __slots__ = ["key", "_value", "_ttl", "_expires_at", "prev", "next"]
+    __slots__ = ("key", "_value", "_ttl", "_expires_at", "prev", "next")
 
     def __init__(self,
                  key: Hashable,
@@ -126,9 +126,9 @@ class Node:
             NodeLRU(key='foo', value='bar', ttl=5s, prev='some_node', next='some_other_node')
         """
         return (
-            f"{self.__class__.__name__}(key={self.key!r}, value={self.value!r}, "
+            f"<{self.__class__.__name__}(key={self.key!r}, value={self.value!r}, "
             f"ttl={str(self.ttl) + ("s" if not isinstance(self.ttl, type(None)) else "")}, "
             f"expires_at={self._expires_at!r}, "
             f"prev={(self.prev.key if self.prev else None)}, "
-            f"next={(self.next.key if self.next else None)})"
+            f"next={(self.next.key if self.next else None)})>"
         )

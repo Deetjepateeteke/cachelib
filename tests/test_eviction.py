@@ -14,29 +14,21 @@ To run:
 Author: Deetjepateeteke <https://github.com/Deetjepateeteke>
 """
 
-from cachelib import DiskCache, MemoryCache, eviction
-from pathlib import Path
 import pytest
 
-path = Path("tests", "test_file.db")
+from cachelib import DiskCache
+from tests.utils import (
+    create_lfu_disk_cache,
+    create_lfu_memory_cache,
+    create_lru_disk_cache,
+    create_lru_memory_cache,
+    teardown_cache
+)
 
 
-def create_lru_memory_cache():
-    return MemoryCache(eviction_policy=eviction.LRU, max_size=2)
-
-def create_lfu_memory_cache():
-    return MemoryCache(eviction_policy=eviction.LFU, max_size=2)
-
-def create_lru_disk_cache():
-    return DiskCache(path, eviction_policy=eviction.LRU, max_size=2)
-
-def create_lfu_disk_cache():
-    return DiskCache(path, eviction_policy=eviction.LFU, max_size=2)
-
-
-@pytest.mark.parametrize("lru_cache", [create_lru_memory_cache, create_lru_disk_cache])
-def test_lru_eviction(lru_cache):
-    lru_cache = lru_cache()
+@pytest.mark.parametrize("create_lru_cache", [create_lru_memory_cache, create_lru_disk_cache])
+def test_lru_eviction(create_lru_cache):
+    lru_cache = create_lru_cache()
 
     try:
         lru_cache.set("key", "value")  # Least recently accessed
@@ -61,16 +53,12 @@ def test_lru_eviction(lru_cache):
 
     finally:
         if isinstance(lru_cache, DiskCache):
-            with lru_cache._lock:
-                lru_cache.close()
-
-                if path.exists():
-                    path.unlink()
+            teardown_cache(lru_cache)
 
 
-@pytest.mark.parametrize("lfu_cache", [create_lfu_memory_cache, create_lfu_disk_cache])
-def test_lfu_eviction(lfu_cache):
-    lfu_cache = lfu_cache()
+@pytest.mark.parametrize("create_lfu_cache", [create_lfu_memory_cache, create_lfu_disk_cache])
+def test_lfu_eviction(create_lfu_cache):
+    lfu_cache = create_lfu_cache()
 
     try:
         lfu_cache.set("key", "value")  # Most frequently accessed
@@ -88,8 +76,4 @@ def test_lfu_eviction(lfu_cache):
 
     finally:
         if isinstance(lfu_cache, DiskCache):
-            with lfu_cache._lock:
-                lfu_cache.close()
-
-                if path.exists():
-                    path.unlink()
+            teardown_cache(lfu_cache)

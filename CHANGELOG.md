@@ -5,11 +5,25 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 - `MultiLevelCache` (l1, l2, l3)
+- FIFO eviction
 - `LazyCache`
 - Add `max_memory`
-- CLI
+- Namespace table in `SQL`
 - Docs
-- Add warnings
+
+## [0.5.0] - 2025-08-19
+
+### Added
+
+- Added `MultiLevelCache` and its tests
+- Added abstractmethod `_make_cache_key()` in BaseCache
+- Added `NullValue` type in `utils.py`
+
+### Changed
+
+- Moved `DiskCache` and `MemoryCache` into `cachelib.caches` folder
+- Renamed `cachelib.errors.CachePathError` to `cachelib.errors.PathError`
+- Replaced `cleanup_thread@interval.setter` by `cleanup_thread.set_interval()` method
 
 ## [0.4.0] - 2025-08-13
 

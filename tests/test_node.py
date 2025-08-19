@@ -21,7 +21,7 @@ Author: Deetjepateeteke <https://github.com/Deetjepateeteke>
 import pytest
 
 from cachelib.errors import CacheConfigurationError
-from cachelib.node import Node
+from cachelib import Node
 
 raises = pytest.raises
 

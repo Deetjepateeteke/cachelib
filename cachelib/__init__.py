@@ -1,11 +1,12 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from .base import BaseCache
-from .disk import DiskCache
-from .node import Node
+from .caches.base import BaseCache
+from .caches.disk import DiskCache
+from .caches.memory import MemoryCache
+from .caches.multi_level_cache import MultiLevelCache
 from . import errors, eviction
-from .memory import MemoryCache
+from .node import Node
 
 
 __all__ = [
@@ -14,8 +15,9 @@ __all__ = [
     "Node",
     "errors",
     "eviction",
-    "MemoryCache"
+    "MemoryCache",
+    "MultiLevelCache"
 ]
-__version__ = "0.4.0"
+__version__ = "0.5.0"
 __author__ = "Deetjepateeteke <https://github.com/Deetjepateeteke>"
 __license__ = "MIT"

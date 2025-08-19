@@ -1,7 +1,7 @@
 # Cachelib: Python cache library
 
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-![Version](https://img.shields.io/badge/version-0.4.0-blue.svg)
+![Version](https://img.shields.io/badge/version-0.5.0-blue.svg)
 
 Cachelib is a safe and lightweight caching package, written in pure Python,
 so it doesn't rely on any third-party dependencies, which makes it easily embeddable in any Python program or script.
@@ -18,6 +18,7 @@ cd cachelib
 ## Features
 
 - In-memory cache and on-disk cache
+- Multi-level cache (L1, L2, L3)
 - TTL support
 - LRU/LFU eviction
 - Thread-safe

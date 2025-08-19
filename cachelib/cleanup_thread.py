@@ -25,7 +25,7 @@ class CleanupThread(ABC, Thread):
     """
     An in-background thread that ensures that expired keys get evicted.
     """
-    __slots__ = ["_cache", "_interval", "_stop_event"]
+    __slots__ = ("_cache", "_interval", "_stop_event")
 
     def __init__(self, cache, interval: Union[int, float]):
         super().__init__(daemon=True)
@@ -56,6 +56,9 @@ class CleanupThread(ABC, Thread):
             None
         """
         ...
+
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__()}(parent={self._cache._name} interval={self._interval})>"
 
     @property
     def interval(self) -> Union[int, float]:
@@ -89,7 +92,7 @@ class CleanupThread(ABC, Thread):
 
 class MemoryCleanupThread(CleanupThread):
 
-    __slots__ = ["_cache", "_interval", "_stop_event"]
+    __slots__ = ("_cache", "_interval", "_stop_event")
 
     def cleanup(self) -> None:
         with self._cache._lock:
@@ -111,7 +114,7 @@ class MemoryCleanupThread(CleanupThread):
 
 class DiskCleanupThread(CleanupThread):
 
-    __slots__ = ["_cache", "_interval", "_stop_event"]
+    __slots__ = ("_cache", "_interval", "_stop_event")
 
     def cleanup(self) -> None:
         with self._cache._lock:
