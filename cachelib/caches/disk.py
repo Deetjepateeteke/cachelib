@@ -25,7 +25,7 @@ from ..errors import (
 )
 from ..eviction import EvictionPolicy
 from ..node import Node
-from ..utils import create_json_cache_key
+from ..utils import create_json_cache_key, NullValue
 
 
 __all__ = ["DiskCache"]
@@ -90,6 +90,7 @@ class DiskCache(BaseCache):
                  path: Union[str, Path],
                  name: str = "",
                  max_size: Optional[int] = None,
+                 max_memory: Optional[Union[int, str]] = NullValue(),
                  eviction_policy: Optional[EvictionPolicy] = None,
                  ttl: Optional[Union[int, float]] = None,
                  verbose: bool = False,
@@ -115,6 +116,7 @@ class DiskCache(BaseCache):
         super().__init__(
             name=name,
             max_size=max_size,
+            max_memory=max_memory,
             eviction_policy=eviction_policy,
             ttl=ttl,
             verbose=verbose,
@@ -195,6 +197,9 @@ class DiskCache(BaseCache):
         with self._get_cursor() as cursor:
             expires_at = None if node.ttl is None else time.time() + node.ttl
             cursor.execute(self.UPDATE_STATE_QUERY, (expires_at, time.time(), node.key))
+
+    def _get_cache_size(self) -> int:
+        return self._path.stat().st_size
 
     def clear(self) -> None:
         with self._lock:

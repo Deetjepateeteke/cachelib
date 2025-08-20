@@ -18,9 +18,10 @@ from abc import ABC, abstractmethod
 from functools import wraps
 import logging
 from pathlib import Path
+import re
 from threading import RLock
 import time
-from typing import Any, Callable, Hashable, NoReturn, Optional, Union
+from typing import Any, Callable, Hashable, Optional, Union
 
 from ..cleanup_thread import CleanupThread, DiskCleanupThread, MemoryCleanupThread
 from ..errors import (
@@ -35,7 +36,7 @@ from ..errors import (
 )
 from ..eviction import EvictionPolicy, _LFUEviction, _LRUEviction
 from ..node import Node
-from ..utils import extract_items_from_args, NullContext
+from ..utils import extract_items_from_args, NullContext, NullValue
 
 __all__ = ["BaseCache", "Stats"]
 
@@ -59,6 +60,7 @@ class BaseCache(ABC):
     def __init__(self,
                  name: str = "",
                  max_size: Optional[int] = None,
+                 max_memory: Optional[Union[int, str]] = NullValue(),
                  eviction_policy: Optional[EvictionPolicy] = None,
                  ttl: Optional[Union[int, float]] = None,
                  verbose: bool = False,
@@ -66,8 +68,18 @@ class BaseCache(ABC):
 
         self.name: str = name
 
-        self._check_max_size_valid(max_size)
-        self._max_size: Optional[int] = max_size
+        if isinstance(max_memory, NullValue) and isinstance(max_size, NullValue):
+            raise CacheConfigurationError("max_size and max_memory cannot be of type NullValue at the same time")
+
+        # Initialize self._max_size and self._max_memory.
+        if not isinstance(max_memory, NullValue):
+            self._max_memory: Optional[Union[int, str]] = self._parse_max_memory(max_memory)
+            self._max_size: NullValue = NullValue()
+
+        elif self._check_max_size_valid(max_size):
+            self._max_size: Optional[int] = max_size
+            self._max_memory: NullValue = NullValue()
+
         self._ttl: Optional[Union[int, float]] = ttl
         self._thread_safe: bool = thread_safe
         self._lock: Union[NullContext, RLock] = \
@@ -78,8 +90,9 @@ class BaseCache(ABC):
 
         # Check for a valid eviction policy
         if isinstance(eviction_policy, (EvictionPolicy, type(None))):
-            if max_size is None and isinstance(eviction_policy, EvictionPolicy):
-                raise CacheConfigurationError("can only set eviction_policy when max_size is not infinite")
+            if isinstance(eviction_policy, EvictionPolicy):
+                if self._max_size is None or self._max_memory is None:
+                    raise CacheConfigurationError("can only set eviction_policy when max_size is not infinite")
         else:
             raise CacheConfigurationError(
                 f"Eviction policy must be of type "
@@ -187,6 +200,15 @@ class BaseCache(ABC):
             node (Node): The node that got accessed.
         """
         ...
+
+    @abstractmethod
+    def _get_cache_size(self) -> int:
+        """
+        Get the cache's size in bytes.
+
+        Returns:
+            int: The cache's size in bytes.
+        """
 
     def get(self, key: Hashable) -> Optional[Any]:
         """
@@ -488,17 +510,19 @@ class BaseCache(ABC):
         return self._max_size
 
     @max_size.setter
-    def max_size(self, max_size: Optional[int]) -> NoReturn:
+    def max_size(self, max_size: Optional[int]) -> None:
         """
         Modify the cache's max-size.
 
         Args:
             max_size (Optional[int]): The new max_size of the cache.
-                                    If max_size equals None, the cache's
-                                    max_size will be infinite.
+              If max_size equals None, the cache's max_size will be unlimited.
+
+        Returns:
+            None
 
         Raises:
-            TypeError: If max_size is not an int or None.
+            CacheConfigurationError: If max_size is not an int or None.
             CacheConfigurationError: If max_size is negative.
             CacheConfigurationError: When cache.max_size gets modified
                         while read-only mode is enabled.
@@ -513,15 +537,88 @@ class BaseCache(ABC):
 
                 self.logger.debug(f"CHANGE max-size={max_size}")
 
-                # Evict nodes if max-size gets exceeded
+                # Evict nodes if max-size gets exceeded.
                 while self._exceeds_max_size():
-                    evict_node: Node = self._get_evict_node()
+                    evict_node = self._get_evict_node()
                     self._remove_node(evict_node)
 
-                    self.logger.debug(f"EVICT key='{evict_node.key}' \
-                                    due to max-size")
+                    self.logger.debug(f"EVICT key='{evict_node.key}' due to max-size")
             else:
                 raise ReadOnlyError()
+
+    @property
+    def max_memory(self) -> Optional[int]:
+        return self._max_memory
+
+    @max_memory.setter
+    def max_memory(self, max_memory: Optional[int]) -> None:
+        """
+        Modify the cache's max_memory.
+
+        Args:
+            max_memory (Optional[int]): The new max_memory of the cache.
+              If max_memory is None, the cache's memory will be unlimited.
+
+        Returns:
+            None
+
+        Raises:
+            CacheConfigurationError: When max_memory is an invalid type.
+            CacheConfigurationError: When max_memory is a negative int.
+            CacheConfigurationError: When max_memory is an invalid str format.
+            CacheConfigurationError: When an invalid unit was detected in max_memory.
+        """
+        with self._lock:
+            # Do not allow changes while read-only is enabled.
+            if not self._read_only:
+                self._max_memory = self._parse_max_memory(max_memory)
+
+                self.logger.debug(f"CHANGE max-memory={max_memory}")
+
+                # Evict nodes if max-memory gets exceeded.
+                while self._exceeds_max_size():
+                    evict_node = self._get_evict_node()
+                    print(evict_node)
+                    self._remove_node(evict_node)
+
+                    self.logger.debug(f"EVICT key='{evict_node.key}' due to max-memory")
+            else:
+                raise ReadOnlyError()
+
+    def _parse_max_memory(self, max_memory: Optional[Union[int, str]]) -> Optional[int]:
+        UNITS = {
+            "b": 1,
+            "kb": 1024,
+            "mb": 1024**2,
+            "gb": 1024**3,
+            "tb": 1024**4
+        }
+
+        if max_memory is None:
+            return max_memory
+
+        elif isinstance(max_memory, int):
+            if max_memory < 0:
+                raise CacheConfigurationError(f"max_memory shouldn't be a negative int, got {max_memory}")
+
+            return max_memory
+
+        elif isinstance(max_memory, str):
+            match = re.fullmatch(r"(\d+(?:\.\d+)?)\s*([a-zA-Z]+)", max_memory.strip())
+
+            if not match:
+                raise CacheConfigurationError(f"max_memory is an invalid format: {max_memory!r}")
+
+            value, unit = match.groups()
+            value = float(value)
+            unit = unit.lower()
+
+            if unit not in UNITS:
+                raise CacheConfigurationError(f"when parsing max_memory, an invalid unit was detected: {unit!r}")
+
+            return int(value * UNITS[unit])
+        else:
+            raise CacheConfigurationError(f"max_memory should be of type str, int or None, got {max_memory.__class__.__name__}")
 
     def set_verbose(self, verbose: bool) -> None:
         """
@@ -735,7 +832,20 @@ class BaseCache(ABC):
         return _VerboseContext(self)
 
     def _exceeds_max_size(self) -> bool:
-        return (self._max_size is not None) and (self.__len__() > self._max_size)
+        # In DiskCache, if max_memory = 0, even if there are no items cached,
+        # the file size will be exceeded. Therefore check if there are no items cached.
+        if self.__len__() == 0:
+            return False
+
+        if not isinstance(self._max_size, NullValue):
+            if (self._max_size is not None) and (self.__len__() > self._max_size):
+                return True
+
+        if not isinstance(self._max_memory, NullValue):
+            if (self._max_memory is not None) and (self._get_cache_size() > self._max_memory):
+                return True
+
+        return False
 
     @abstractmethod
     def _create_cache_key(key):
@@ -744,12 +854,15 @@ class BaseCache(ABC):
         ...
 
     @staticmethod
-    def _check_max_size_valid(max_size):
+    def _check_max_size_valid(max_size) -> True:
+        """ Returns True if no exceptions were raised. """
         if isinstance(max_size, (int, type(None))):
             if max_size is not None and max_size < 0:
                 raise CacheConfigurationError(f"max_size must be a non-negative int or None, got {max_size!r}")
         else:
             raise CacheConfigurationError(f"max_size should be a non-negative int or None, got {max_size!r}")
+
+        return True
 
     @staticmethod
     def _check_path_valid(path: Union[str, Path], suffix: str) -> Path:

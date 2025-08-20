@@ -36,6 +36,7 @@ from cachelib.errors import (
     KeyNotFoundError,
     ReadOnlyError
 )
+from tests.utils import PATH, teardown_cache
 
 raises = pytest.raises
 path = Path("tests", "test_file.db")
@@ -192,7 +193,7 @@ def test_memoize(cache, mocker):
     assert add(1, 2) == 3 and calls == 2  # Key isn't expired
 
 
-def test_change_max_size(cache):
+def test_change_max_size():
 
     def create_lfu_caches():
         memory_lfu = MemoryCache(eviction_policy=eviction.LFU, max_size=2)
@@ -226,6 +227,62 @@ def test_change_max_size(cache):
 
             if isinstance(cache, DiskCache):
                 cache.close()
+
+
+def test_max_memory_memory_cache():
+    cache = MemoryCache(max_memory="150b", eviction_policy=eviction.LRU)
+
+    cache.set("key", "value")
+    assert "key" in cache
+
+    cache.set("k", "v")
+    assert "key" not in cache
+    assert "k" in cache
+
+    # Test 0 max-memory
+    cache.max_memory = 0
+    cache.set("key", "value")
+
+    assert "k" not in cache
+    assert "key" not in cache
+
+    cache.clear()
+
+    # Test unlimited max-memory
+    cache.max_memory = None
+
+    for i in range(100):
+        cache.set(i, i)
+
+    assert len(cache) == 100
+
+
+def test_max_memory_disk_cache():
+    cache = DiskCache(path=PATH, max_memory="15kb", eviction_policy=eviction.LRU)
+
+    try:
+        for i in range(200):
+            cache.set(i, i)
+
+        # Assert that some items were deleted.
+        assert len(cache) < 200
+
+        cache.max_memory = 0
+        assert len(cache) == 0
+    finally:
+        teardown_cache(cache)
+
+
+def test_max_memory_invalid_calls():
+    # Invalid calls
+    with raises(CacheConfigurationError):
+        MemoryCache(max_memory="10bt", eviction_policy=eviction.LRU)
+
+    with raises(CacheConfigurationError):
+        MemoryCache(max_memory="mb10", eviction_policy=eviction.LRU)
+
+    with raises(CacheConfigurationError):
+        MemoryCache(max_memory=-1, eviction_policy=eviction.LRU)
 
 
 def test_read_only(cache):

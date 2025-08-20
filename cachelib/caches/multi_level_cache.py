@@ -83,6 +83,9 @@ class MultiLevelCache(BaseCache):
             self.delete(node.key)
             self.set(node.key, node.value, node.ttl)
 
+    def _get_cache_size(self) -> int:
+        raise NotImplementedError()
+
     def get(self, key: Hashable) -> Any:
         with self._lock:
             for cache in self.levels:

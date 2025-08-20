@@ -38,6 +38,7 @@ class NullValue:
 
     Used as a replacement for None when something is undefined.
     """
+    pass
 
 
 def extract_items_from_args(*args, **kwargs) -> dict[str, Optional[Any]]:

@@ -14,6 +14,7 @@ Author: Deetjepateeteke <https://github.com/Deetjepateeteke>
 
 from pathlib import Path
 import pickle
+import sys
 from typing import Any, Hashable, Optional, Self, Union
 
 from .base import BaseCache
@@ -25,6 +26,7 @@ from ..errors import (
 )
 from ..eviction import EvictionPolicy, _LFUEviction
 from ..node import Node
+from ..utils import NullValue
 
 
 __all__ = ["MemoryCache"]
@@ -37,6 +39,7 @@ class MemoryCache(BaseCache):
     def __init__(self,
                  name: str = "",
                  max_size: Optional[int] = None,
+                 max_memory: Optional[Union[int, str]] = NullValue(),
                  eviction_policy: Optional[EvictionPolicy] = None,
                  ttl: Optional[Union[int, float]] = None,
                  verbose: bool = False,
@@ -61,6 +64,7 @@ class MemoryCache(BaseCache):
         super().__init__(
             name=name,
             max_size=max_size,
+            max_memory=max_memory,
             eviction_policy=eviction_policy,
             ttl=ttl,
             verbose=verbose,
@@ -159,6 +163,13 @@ class MemoryCache(BaseCache):
                 node.next = self._head.next
                 self._head.next.prev = node
                 self._head.next = node
+
+    def _get_cache_size(self) -> int:
+        total_bytes = 0
+        with self._lock:
+            for key, node in zip(self._cache.keys(), self._cache.values()):
+                total_bytes += sys.getsizeof(key) + sys.getsizeof(node)
+        return total_bytes
 
     def clear(self) -> None:
         with self._lock:

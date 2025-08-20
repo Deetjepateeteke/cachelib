@@ -81,7 +81,7 @@ class CleanupThread(ABC, Thread):
         # Check for a valid interval value
         if not isinstance(interval, (int, float)):
             self.stop()
-            raise CleanupThreadConfigurationError(f"Expected interval to be of type int or float, got {type(interval)}")
+            raise CleanupThreadConfigurationError(f"Expected interval to be of type int or float, got {type(interval).__name__}")
 
         if interval < 0:
             self.stop()

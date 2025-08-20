@@ -4,12 +4,17 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
-- `MultiLevelCache` (l1, l2, l3)
 - FIFO eviction
 - `LazyCache`
 - Add `max_memory`
 - Namespace table in `SQL`
 - Docs
+
+## [0.5.1] - 2025-08-20
+
+### Added
+
+- Added `max_memory` in DiskCache and MemoryCache
 
 ## [0.5.0] - 2025-08-19
 
