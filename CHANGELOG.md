@@ -6,7 +6,6 @@ All notable changes to this project will be documented in this file.
 
 - FIFO eviction
 - `LazyCache`
-- Add `max_memory`
 - Namespace table in `SQL`
 - Docs
 
