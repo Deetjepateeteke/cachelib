@@ -10,10 +10,12 @@ import sys
 
 sys.path.insert(0, os.path.abspath("../.."))
 
-project = 'cachelib'
-copyright = '2025, Deetjepateeteke'
-author = 'Deetjepateeteke'
-release = '0.5.1'
+import cachelib
+
+project = cachelib.__name__
+copyright = f'2025, {cachelib.__author__}'
+author = cachelib.__author__
+release = cachelib.__version__
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
