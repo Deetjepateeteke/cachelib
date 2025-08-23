@@ -8,14 +8,14 @@
 import os
 import sys
 
-sys.path.insert(0, os.path.abspath("../.."))
+sys.path.insert(0, os.path.abspath('../..'))
 
 import cachelib
 
 project = cachelib.__name__
-copyright = f'2025, {cachelib.__author__}'
-author = cachelib.__author__
 release = cachelib.__version__
+author = cachelib.__author__
+copyright = f'2025, {author}'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -37,3 +37,4 @@ exclude_patterns = []
 
 html_theme = 'furo'
 html_static_path = ['_static']
+html_baseurl = 'https://deetjepateeteke.github.io/cachelib/'
