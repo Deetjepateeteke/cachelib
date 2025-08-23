@@ -1,4 +1,4 @@
-# Cachelib Usage Guide
+# Usage Guide
 
 This guide shows how to use **cachelib**.
 

@@ -6,14 +6,13 @@
 Cachelib Documentation
 ======================
 
-Add your content using ``reStructuredText`` syntax. See the
-`reStructuredText <https://www.sphinx-doc.org/en/master/usage/restructuredtext/index.html>`_
-documentation for details.
-
+Cachelib is a safe and lightweight caching package, written in pure Python,
+so it doesn't rely on any third-party dependencies, which makes it easily embeddable in any Python program or script.
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
+   installation
    usage
    reference
