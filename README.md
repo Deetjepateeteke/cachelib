@@ -53,7 +53,7 @@ cache.clear()
 ## Links
 
 - Source Code: https://github.com/Deetjepateeteke/cachelib/
-- Docs: https://github.com/Deetjepateeteke/cachelib/blob/main/docs/usage.md
+- Docs: https://deetjepateeteke.github.io/cachelib/
 
 ## License
 
