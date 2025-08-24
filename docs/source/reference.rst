@@ -9,6 +9,7 @@ cachelib.MemoryCache
    :inherited-members:
    :undoc-members:
    :show-inheritance:
+   :special-members: __len__, __contains__, __getitem__, __setitem__, __delitem__
 
 cachelib.DiskCache
 -------------------------------
@@ -17,6 +18,7 @@ cachelib.DiskCache
    :inherited-members:
    :undoc-members:
    :show-inheritance:
+   :special-members: __len__, __contains__, __getitem__, __setitem__, __delitem__
 
 cachelib.MultiLevelCache
 -------------------------------
@@ -25,6 +27,7 @@ cachelib.MultiLevelCache
    :inherited-members:
    :undoc-members:
    :show-inheritance:
+   :special-members: __len__, __contains__, __getitem__, __setitem__, __delitem__
 
 cachelib.eviction
 -------------------------------
