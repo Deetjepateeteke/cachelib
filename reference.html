@@ -1,0 +1,1622 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="./">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="prev" title="Usage Guide" href="usage.html" />
+        <link rel="canonical" href="https://deetjepateeteke.github.io/cachelib/reference.html" />
+
+    <!-- Generated with Sphinx 8.2.3 and Furo 2025.07.19 -->
+        <title>API Reference - cachelib 0.5.2 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=25af2a20" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #2b2b2b;
+  --color-code-foreground: #f8f8f2;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #2b2b2b;
+  --color-code-foreground: #f8f8f2;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="index.html"><div class="brand">cachelib 0.5.2 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
+  
+  <span class="sidebar-brand-text">cachelib 0.5.2 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage Guide</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">API Reference</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="_sources/reference.rst.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="api-reference">
+<h1>API Reference<a class="headerlink" href="#api-reference" title="Link to this heading">¶</a></h1>
+<section id="cachelib-memorycache">
+<h2>cachelib.MemoryCache<a class="headerlink" href="#cachelib-memorycache" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="cachelib.MemoryCache">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cachelib.</span></span><span class="sig-name descname"><span class="pre">MemoryCache</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_size:</span> <span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_memory:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">&lt;cachelib.utils.NullValue</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eviction_policy:</span> <span class="pre">~cachelib.eviction.EvictionPolicy</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ttl:</span> <span class="pre">int</span> <span class="pre">|</span> <span class="pre">float</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thread_safe:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cachelib/caches/memory.html#MemoryCache"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cachelib.MemoryCache" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseCache</span></code></p>
+<p>An in-memory cache with lru/lfu eviction and optional ttl-support.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="cachelib.MemoryCache.__contains__">
+<span class="sig-name descname"><span class="pre">__contains__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Hashable</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#cachelib.MemoryCache.__contains__" title="Link to this definition">¶</a></dt>
+<dd><p>Returns True if the given key exists in the cache; False otherwise.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cachelib.MemoryCache.__delitem__">
+<span class="sig-name descname"><span class="pre">__delitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Hashable</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#cachelib.MemoryCache.__delitem__" title="Link to this definition">¶</a></dt>
+<dd><p>Call self.delete(key)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cachelib.MemoryCache.__getitem__">
+<span class="sig-name descname"><span class="pre">__getitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Hashable</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#cachelib.MemoryCache.__getitem__" title="Link to this definition">¶</a></dt>
+<dd><p>Call self.get(key)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cachelib.MemoryCache.__len__">
+<span class="sig-name descname"><span class="pre">__len__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="_modules/cachelib/caches/memory.html#MemoryCache.__len__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cachelib.MemoryCache.__len__" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the amount of entries in the cache.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cachelib.MemoryCache.__setitem__">
+<span class="sig-name descname"><span class="pre">__setitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Hashable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#cachelib.MemoryCache.__setitem__" title="Link to this definition">¶</a></dt>
+<dd><p>Call self.set(key, value)</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="cachelib.MemoryCache.cache">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cache</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">Hashable</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#cachelib.MemoryCache.cache" title="Link to this definition">¶</a></dt>
+<dd><p>read-only</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cachelib.MemoryCache.clear">
+<span class="sig-name descname"><span class="pre">clear</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/cachelib/caches/memory.html#MemoryCache.clear"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cachelib.MemoryCache.clear" title="Link to this definition">¶</a></dt>
+<dd><p>Clear all entries from the cache.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ReadOnlyError</strong> – When cache.clear() is called while
+    read-only mode is enabled.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cachelib.MemoryCache.delete">
+<span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Hashable</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#cachelib.MemoryCache.delete" title="Link to this definition">¶</a></dt>
+<dd><p>Delete a key from the cache.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>key</strong> (<em>Hashable</em>) – The key that has to be deleted.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>KeyNotFoundError</strong> – When the given key is not found in the cache.</p></li>
+<li><p><strong>ReadOnlyError</strong> – When cache.delete() is called while
+    read-only mode is enabled.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cachelib.MemoryCache.get">
+<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Hashable</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#cachelib.MemoryCache.get" title="Link to this definition">¶</a></dt>
+<dd><p>Retrieve the value for the given key (if the key exists).
+If the key isn’t found in the cache, None gets returned.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>Key</strong> (<em>Hashable</em>) – The requested key.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>If the key is found in the cache,</dt><dd><p>return its value; None otherwise.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[Any]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cachelib.MemoryCache.get_many">
+<span class="sig-name descname"><span class="pre">get_many</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Hashable</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#cachelib.MemoryCache.get_many" title="Link to this definition">¶</a></dt>
+<dd><p>Retrieve the corresponding values for the given keys, if they exist.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>keys</strong> (<em>tuple</em><em>[</em><em>Hashable</em><em>]</em>) – The requested keys.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>The corresponding values to the</dt><dd><p>requested keys.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple[Any]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cachelib.MemoryCache.get_stats">
+<span class="sig-name descname"><span class="pre">get_stats</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#cachelib.MemoryCache.get_stats" title="Link to this definition">¶</a></dt>
+<dd><p>Get the cache’s stats.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The cache’s stats.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict[str, Any]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cachelib.MemoryCache.inspect">
+<span class="sig-name descname"><span class="pre">inspect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Hashable</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#cachelib.MemoryCache.inspect" title="Link to this definition">¶</a></dt>
+<dd><p>Inspect the given key in the cache. Returns a dict with
+the key’s information.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>key</strong> (<em>Hashable</em>) – The requested key.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Return a dict with the key’s information.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict[str, Any]</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>KeyNotFoundError</strong> – When the given key is nonexistent.</p></li>
+<li><p><strong>KeyExpiredError</strong> – When the given key is expired.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cachelib.MemoryCache.keys">
+<span class="sig-name descname"><span class="pre">keys</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Hashable</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/cachelib/caches/memory.html#MemoryCache.keys"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cachelib.MemoryCache.keys" title="Link to this definition">¶</a></dt>
+<dd><p>Get the cached keys.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The tuple with the cached keys.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>tuple[Hashable]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cachelib.MemoryCache.load">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="reference internal" href="_modules/cachelib/caches/memory.html#MemoryCache.load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cachelib.MemoryCache.load" title="Link to this definition">¶</a></dt>
+<dd><p>Load a cache from a .pkl file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><em>Path</em><em>]</em>) – The path to the saved cache.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The cache object (a subclass of BaseCache).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Self</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>CacheLoadError</strong> – When something went wrong while reading the .pkl file.</p></li>
+<li><p><strong>CachePathError</strong> – When the given path isn’t a .pkl file.</p></li>
+<li><p><strong>CachePathError</strong> – When path isn’t a str or a pathlib.Path().</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="cachelib.MemoryCache.max_memory">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">max_memory</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#cachelib.MemoryCache.max_memory" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="cachelib.MemoryCache.max_size">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">max_size</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#cachelib.MemoryCache.max_size" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cachelib.MemoryCache.memoize">
+<span class="sig-name descname"><span class="pre">memoize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ttl</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#cachelib.MemoryCache.memoize" title="Link to this definition">¶</a></dt>
+<dd><p>A decorator.</p>
+<p>Cache the return value of a function with its arguments.
+When the function gets called again with the same arguments,
+the cached result will get returned.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ttl</strong> (<em>Optional</em><em>[</em><em>Union</em><em>[</em><em>int</em><em>, </em><em>float</em><em>]</em><em>]</em>) – The ttl of every
+cached function result.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The cached or computed outcome of the function.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Any</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ReadOnlyError</strong> – When a function call gets stored While
+    read-only mode is enabled</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cachelib.MemoryCache.read_only">
+<span class="sig-name descname"><span class="pre">read_only</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cachelib.MemoryCache.read_only" title="Link to this definition">¶</a></dt>
+<dd><p>A context manager to enable read-only mode.
+The cache cannot be modified while read-only mode is enabled.</p>
+<dl>
+<dt>Usage:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">cache</span><span class="o">.</span><span class="n">read_only</span><span class="p">():</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">some</span> <span class="n">code</span> <span class="k">while</span> <span class="n">cache</span> <span class="ow">is</span> <span class="n">read</span><span class="o">-</span><span class="n">only</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ReadOnlyError</strong> – When there is an attempt to modify the cache
+    while read-only mode is enabled.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cachelib.MemoryCache.save">
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/cachelib/caches/memory.html#MemoryCache.save"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cachelib.MemoryCache.save" title="Link to this definition">¶</a></dt>
+<dd><p>Save the cache as a .pkl file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><em>Path</em><em>]</em>) – The path to the .pkl file
+in which the cache will be stored.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ValueError</strong> – When the given path isn’t a .pkl file.</p></li>
+<li><p><strong>TypeError</strong> – When path isn’t a str or a pathlib.Path().</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cachelib.MemoryCache.set">
+<span class="sig-name descname"><span class="pre">set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Hashable</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#cachelib.MemoryCache.set" title="Link to this definition">¶</a></dt>
+<dd><p>Set the value (and ttl) for the given key (if it doesn’t exist yet),
+update the value (and ttl) otherwise.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<em>Hashable</em>) – The key.</p></li>
+<li><p><strong>value</strong> (<em>Any</em>) – The node’s value.</p></li>
+<li><p><strong>ttl</strong> (<em>Optional</em><em>[</em><em>Union</em><em>[</em><em>int</em><em>, </em><em>float</em><em>]</em><em>]</em>) – The node’s ttl.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>CacheConfigurationError</strong> – When the given arguments aren’t valid.</p></li>
+<li><p><strong>ReadOnlyError</strong> – When cache.set() is called while
+    read-only mode is enabled.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cachelib.MemoryCache.set_read_only">
+<span class="sig-name descname"><span class="pre">set_read_only</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">read_only</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#cachelib.MemoryCache.set_read_only" title="Link to this definition">¶</a></dt>
+<dd><p>Enable or disable read-only mode manually.
+The cache cannot be modified while read-only mode
+is enabled. It is preferred to use cache.read_only() as
+a context manager.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>read_only</strong> (<em>bool</em>) – True to enable read-only mode,
+False to disable read-only mode.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<dl>
+<dt>Usage:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cache</span><span class="o">.</span><span class="n">set_read_only</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># Enable read-only mode</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="o">...</span> <span class="n">some</span> <span class="n">code</span> <span class="k">while</span> <span class="n">cache</span> <span class="ow">is</span> <span class="n">read</span><span class="o">-</span><span class="n">only</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cache</span><span class="o">.</span><span class="n">set_read_only</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># Disable read-only mode</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>CacheConfigurationError</strong> – When read_only isn’t a bool.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cachelib.MemoryCache.set_verbose">
+<span class="sig-name descname"><span class="pre">set_verbose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#cachelib.MemoryCache.set_verbose" title="Link to this definition">¶</a></dt>
+<dd><p>Enable or disable debug mode manually. While
+debug mode is enabled, debug logs will be shown.
+It is preferred to use cache.verbose() as
+a context manager.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>verbose</strong> (<em>bool</em>) – True to enable debug mode,
+False to disable debug mode.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<dl>
+<dt>Usage:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cache</span><span class="o">.</span><span class="n">set_verbose</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># Enable debug mode</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="o">...</span> <span class="n">some</span> <span class="n">code</span> <span class="k">with</span> <span class="n">debug</span> <span class="n">logs</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cache</span><span class="o">.</span><span class="n">set_verbose</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># Disable debug mode</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>CacheConfigurationError</strong> – When verbose isn’t a bool.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="cachelib.MemoryCache.stats">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">stats</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Stats</span></em><a class="headerlink" href="#cachelib.MemoryCache.stats" title="Link to this definition">¶</a></dt>
+<dd><p>read-only</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cachelib.MemoryCache.ttl">
+<span class="sig-name descname"><span class="pre">ttl</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Hashable</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#cachelib.MemoryCache.ttl" title="Link to this definition">¶</a></dt>
+<dd><p>Get the ttl (Time To Live) of the given key.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>key</strong> (<em>Hashable</em>) – The key.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The key’s ttl.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[Union[int, float]]</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>KeyNotFoundError</strong> – When the given key is nonexistent.</p></li>
+<li><p><strong>KeyExpiredError</strong> – When the given key is expired.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cachelib.MemoryCache.values">
+<span class="sig-name descname"><span class="pre">values</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/cachelib/caches/memory.html#MemoryCache.values"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cachelib.MemoryCache.values" title="Link to this definition">¶</a></dt>
+<dd><p>Get the cached values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The tuple with the cached values.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>tuple[Any]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cachelib.MemoryCache.verbose">
+<span class="sig-name descname"><span class="pre">verbose</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cachelib.MemoryCache.verbose" title="Link to this definition">¶</a></dt>
+<dd><p>A context manager to enable debug mode. When debug
+mode is enabled, debug logs will be shown.</p>
+<dl>
+<dt>Usage:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">cache</span><span class="o">.</span><span class="n">verbose</span><span class="p">():</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">some</span> <span class="n">code</span> <span class="k">with</span> <span class="n">debug</span> <span class="n">logs</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="cachelib-diskcache">
+<h2>cachelib.DiskCache<a class="headerlink" href="#cachelib-diskcache" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="cachelib.DiskCache">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cachelib.</span></span><span class="sig-name descname"><span class="pre">DiskCache</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">~pathlib.Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_size:</span> <span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_memory:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">&lt;cachelib.utils.NullValue</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eviction_policy:</span> <span class="pre">~cachelib.eviction.EvictionPolicy</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ttl:</span> <span class="pre">int</span> <span class="pre">|</span> <span class="pre">float</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thread_safe:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cachelib/caches/disk.html#DiskCache"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cachelib.DiskCache" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseCache</span></code></p>
+<p>An on-disk cache with lru/lfu eviction and optional ttl-support.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="cachelib.DiskCache.__contains__">
+<span class="sig-name descname"><span class="pre">__contains__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Hashable</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#cachelib.DiskCache.__contains__" title="Link to this definition">¶</a></dt>
+<dd><p>Returns True if the given key exists in the cache; False otherwise.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cachelib.DiskCache.__delitem__">
+<span class="sig-name descname"><span class="pre">__delitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Hashable</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#cachelib.DiskCache.__delitem__" title="Link to this definition">¶</a></dt>
+<dd><p>Call self.delete(key)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cachelib.DiskCache.__getitem__">
+<span class="sig-name descname"><span class="pre">__getitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Hashable</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#cachelib.DiskCache.__getitem__" title="Link to this definition">¶</a></dt>
+<dd><p>Call self.get(key)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cachelib.DiskCache.__len__">
+<span class="sig-name descname"><span class="pre">__len__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="_modules/cachelib/caches/disk.html#DiskCache.__len__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cachelib.DiskCache.__len__" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the amount of entries in the cache.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cachelib.DiskCache.__setitem__">
+<span class="sig-name descname"><span class="pre">__setitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Hashable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#cachelib.DiskCache.__setitem__" title="Link to this definition">¶</a></dt>
+<dd><p>Call self.set(key, value)</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="cachelib.DiskCache.cache">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cache</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">Hashable</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#cachelib.DiskCache.cache" title="Link to this definition">¶</a></dt>
+<dd><p>read-only</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cachelib.DiskCache.clear">
+<span class="sig-name descname"><span class="pre">clear</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/cachelib/caches/disk.html#DiskCache.clear"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cachelib.DiskCache.clear" title="Link to this definition">¶</a></dt>
+<dd><p>Clear all entries from the cache.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ReadOnlyError</strong> – When cache.clear() is called while
+    read-only mode is enabled.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cachelib.DiskCache.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/cachelib/caches/disk.html#DiskCache.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cachelib.DiskCache.close" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cachelib.DiskCache.delete">
+<span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Hashable</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#cachelib.DiskCache.delete" title="Link to this definition">¶</a></dt>
+<dd><p>Delete a key from the cache.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>key</strong> (<em>Hashable</em>) – The key that has to be deleted.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>KeyNotFoundError</strong> – When the given key is not found in the cache.</p></li>
+<li><p><strong>ReadOnlyError</strong> – When cache.delete() is called while
+    read-only mode is enabled.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cachelib.DiskCache.get">
+<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Hashable</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#cachelib.DiskCache.get" title="Link to this definition">¶</a></dt>
+<dd><p>Retrieve the value for the given key (if the key exists).
+If the key isn’t found in the cache, None gets returned.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>Key</strong> (<em>Hashable</em>) – The requested key.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>If the key is found in the cache,</dt><dd><p>return its value; None otherwise.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[Any]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cachelib.DiskCache.get_many">
+<span class="sig-name descname"><span class="pre">get_many</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Hashable</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#cachelib.DiskCache.get_many" title="Link to this definition">¶</a></dt>
+<dd><p>Retrieve the corresponding values for the given keys, if they exist.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>keys</strong> (<em>tuple</em><em>[</em><em>Hashable</em><em>]</em>) – The requested keys.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>The corresponding values to the</dt><dd><p>requested keys.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple[Any]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cachelib.DiskCache.get_stats">
+<span class="sig-name descname"><span class="pre">get_stats</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#cachelib.DiskCache.get_stats" title="Link to this definition">¶</a></dt>
+<dd><p>Get the cache’s stats.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The cache’s stats.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict[str, Any]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cachelib.DiskCache.inspect">
+<span class="sig-name descname"><span class="pre">inspect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Hashable</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#cachelib.DiskCache.inspect" title="Link to this definition">¶</a></dt>
+<dd><p>Inspect the given key in the cache. Returns a dict with
+the key’s information.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>key</strong> (<em>Hashable</em>) – The requested key.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Return a dict with the key’s information.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict[str, Any]</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>KeyNotFoundError</strong> – When the given key is nonexistent.</p></li>
+<li><p><strong>KeyExpiredError</strong> – When the given key is expired.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cachelib.DiskCache.keys">
+<span class="sig-name descname"><span class="pre">keys</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Hashable</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/cachelib/caches/disk.html#DiskCache.keys"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cachelib.DiskCache.keys" title="Link to this definition">¶</a></dt>
+<dd><p>Get the cached keys.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The tuple with the cached keys.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>tuple[Hashable]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="cachelib.DiskCache.max_memory">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">max_memory</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#cachelib.DiskCache.max_memory" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="cachelib.DiskCache.max_size">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">max_size</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#cachelib.DiskCache.max_size" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cachelib.DiskCache.memoize">
+<span class="sig-name descname"><span class="pre">memoize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ttl</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#cachelib.DiskCache.memoize" title="Link to this definition">¶</a></dt>
+<dd><p>A decorator.</p>
+<p>Cache the return value of a function with its arguments.
+When the function gets called again with the same arguments,
+the cached result will get returned.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ttl</strong> (<em>Optional</em><em>[</em><em>Union</em><em>[</em><em>int</em><em>, </em><em>float</em><em>]</em><em>]</em>) – The ttl of every
+cached function result.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The cached or computed outcome of the function.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Any</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ReadOnlyError</strong> – When a function call gets stored While
+    read-only mode is enabled</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cachelib.DiskCache.read_only">
+<span class="sig-name descname"><span class="pre">read_only</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cachelib.DiskCache.read_only" title="Link to this definition">¶</a></dt>
+<dd><p>A context manager to enable read-only mode.
+The cache cannot be modified while read-only mode is enabled.</p>
+<dl>
+<dt>Usage:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">cache</span><span class="o">.</span><span class="n">read_only</span><span class="p">():</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">some</span> <span class="n">code</span> <span class="k">while</span> <span class="n">cache</span> <span class="ow">is</span> <span class="n">read</span><span class="o">-</span><span class="n">only</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ReadOnlyError</strong> – When there is an attempt to modify the cache
+    while read-only mode is enabled.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cachelib.DiskCache.set">
+<span class="sig-name descname"><span class="pre">set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Hashable</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#cachelib.DiskCache.set" title="Link to this definition">¶</a></dt>
+<dd><p>Set the value (and ttl) for the given key (if it doesn’t exist yet),
+update the value (and ttl) otherwise.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<em>Hashable</em>) – The key.</p></li>
+<li><p><strong>value</strong> (<em>Any</em>) – The node’s value.</p></li>
+<li><p><strong>ttl</strong> (<em>Optional</em><em>[</em><em>Union</em><em>[</em><em>int</em><em>, </em><em>float</em><em>]</em><em>]</em>) – The node’s ttl.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>CacheConfigurationError</strong> – When the given arguments aren’t valid.</p></li>
+<li><p><strong>ReadOnlyError</strong> – When cache.set() is called while
+    read-only mode is enabled.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cachelib.DiskCache.set_read_only">
+<span class="sig-name descname"><span class="pre">set_read_only</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">read_only</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#cachelib.DiskCache.set_read_only" title="Link to this definition">¶</a></dt>
+<dd><p>Enable or disable read-only mode manually.
+The cache cannot be modified while read-only mode
+is enabled. It is preferred to use cache.read_only() as
+a context manager.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>read_only</strong> (<em>bool</em>) – True to enable read-only mode,
+False to disable read-only mode.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<dl>
+<dt>Usage:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cache</span><span class="o">.</span><span class="n">set_read_only</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># Enable read-only mode</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="o">...</span> <span class="n">some</span> <span class="n">code</span> <span class="k">while</span> <span class="n">cache</span> <span class="ow">is</span> <span class="n">read</span><span class="o">-</span><span class="n">only</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cache</span><span class="o">.</span><span class="n">set_read_only</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># Disable read-only mode</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>CacheConfigurationError</strong> – When read_only isn’t a bool.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cachelib.DiskCache.set_verbose">
+<span class="sig-name descname"><span class="pre">set_verbose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#cachelib.DiskCache.set_verbose" title="Link to this definition">¶</a></dt>
+<dd><p>Enable or disable debug mode manually. While
+debug mode is enabled, debug logs will be shown.
+It is preferred to use cache.verbose() as
+a context manager.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>verbose</strong> (<em>bool</em>) – True to enable debug mode,
+False to disable debug mode.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<dl>
+<dt>Usage:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cache</span><span class="o">.</span><span class="n">set_verbose</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># Enable debug mode</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="o">...</span> <span class="n">some</span> <span class="n">code</span> <span class="k">with</span> <span class="n">debug</span> <span class="n">logs</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cache</span><span class="o">.</span><span class="n">set_verbose</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># Disable debug mode</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>CacheConfigurationError</strong> – When verbose isn’t a bool.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="cachelib.DiskCache.stats">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">stats</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Stats</span></em><a class="headerlink" href="#cachelib.DiskCache.stats" title="Link to this definition">¶</a></dt>
+<dd><p>read-only</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cachelib.DiskCache.ttl">
+<span class="sig-name descname"><span class="pre">ttl</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Hashable</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#cachelib.DiskCache.ttl" title="Link to this definition">¶</a></dt>
+<dd><p>Get the ttl (Time To Live) of the given key.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>key</strong> (<em>Hashable</em>) – The key.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The key’s ttl.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[Union[int, float]]</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>KeyNotFoundError</strong> – When the given key is nonexistent.</p></li>
+<li><p><strong>KeyExpiredError</strong> – When the given key is expired.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cachelib.DiskCache.values">
+<span class="sig-name descname"><span class="pre">values</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/cachelib/caches/disk.html#DiskCache.values"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cachelib.DiskCache.values" title="Link to this definition">¶</a></dt>
+<dd><p>Get the cached values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The tuple with the cached values.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>tuple[Any]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cachelib.DiskCache.verbose">
+<span class="sig-name descname"><span class="pre">verbose</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cachelib.DiskCache.verbose" title="Link to this definition">¶</a></dt>
+<dd><p>A context manager to enable debug mode. When debug
+mode is enabled, debug logs will be shown.</p>
+<dl>
+<dt>Usage:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">cache</span><span class="o">.</span><span class="n">verbose</span><span class="p">():</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">some</span> <span class="n">code</span> <span class="k">with</span> <span class="n">debug</span> <span class="n">logs</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="cachelib-multilevelcache">
+<h2>cachelib.MultiLevelCache<a class="headerlink" href="#cachelib-multilevelcache" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="cachelib.MultiLevelCache">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cachelib.</span></span><span class="sig-name descname"><span class="pre">MultiLevelCache</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">levels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">BaseCache</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inclusivity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'inclusive'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'exclusive'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'inclusive'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cachelib/caches/multi_level_cache.html#MultiLevelCache"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cachelib.MultiLevelCache" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseCache</span></code></p>
+<p>A multi-level cache that spreads it key/value pairs over multiple caches
+to improve performance. The cache supports ‘inclusive’ or ‘exclusive’ mode.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="cachelib.MultiLevelCache.__contains__">
+<span class="sig-name descname"><span class="pre">__contains__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Hashable</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#cachelib.MultiLevelCache.__contains__" title="Link to this definition">¶</a></dt>
+<dd><p>Returns True if the given key exists in the cache; False otherwise.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cachelib.MultiLevelCache.__delitem__">
+<span class="sig-name descname"><span class="pre">__delitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Hashable</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#cachelib.MultiLevelCache.__delitem__" title="Link to this definition">¶</a></dt>
+<dd><p>Call self.delete(key)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cachelib.MultiLevelCache.__getitem__">
+<span class="sig-name descname"><span class="pre">__getitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Hashable</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#cachelib.MultiLevelCache.__getitem__" title="Link to this definition">¶</a></dt>
+<dd><p>Call self.get(key)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cachelib.MultiLevelCache.__len__">
+<span class="sig-name descname"><span class="pre">__len__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="_modules/cachelib/caches/multi_level_cache.html#MultiLevelCache.__len__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cachelib.MultiLevelCache.__len__" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the amount of entries in the cache.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cachelib.MultiLevelCache.__setitem__">
+<span class="sig-name descname"><span class="pre">__setitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Hashable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#cachelib.MultiLevelCache.__setitem__" title="Link to this definition">¶</a></dt>
+<dd><p>Call self.set(key, value)</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="cachelib.MultiLevelCache.cache">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cache</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">Hashable</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#cachelib.MultiLevelCache.cache" title="Link to this definition">¶</a></dt>
+<dd><p>read-only</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cachelib.MultiLevelCache.clear">
+<span class="sig-name descname"><span class="pre">clear</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/cachelib/caches/multi_level_cache.html#MultiLevelCache.clear"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cachelib.MultiLevelCache.clear" title="Link to this definition">¶</a></dt>
+<dd><p>Clear all entries from the cache.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ReadOnlyError</strong> – When cache.clear() is called while
+    read-only mode is enabled.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cachelib.MultiLevelCache.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/cachelib/caches/multi_level_cache.html#MultiLevelCache.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cachelib.MultiLevelCache.close" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cachelib.MultiLevelCache.delete">
+<span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Hashable</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/cachelib/caches/multi_level_cache.html#MultiLevelCache.delete"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cachelib.MultiLevelCache.delete" title="Link to this definition">¶</a></dt>
+<dd><p>Delete a key from the cache.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>key</strong> (<em>Hashable</em>) – The key that has to be deleted.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>KeyNotFoundError</strong> – When the given key is not found in the cache.</p></li>
+<li><p><strong>ReadOnlyError</strong> – When cache.delete() is called while
+    read-only mode is enabled.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cachelib.MultiLevelCache.get">
+<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Hashable</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="reference internal" href="_modules/cachelib/caches/multi_level_cache.html#MultiLevelCache.get"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cachelib.MultiLevelCache.get" title="Link to this definition">¶</a></dt>
+<dd><p>Retrieve the value for the given key (if the key exists).
+If the key isn’t found in the cache, None gets returned.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>Key</strong> (<em>Hashable</em>) – The requested key.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>If the key is found in the cache,</dt><dd><p>return its value; None otherwise.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[Any]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cachelib.MultiLevelCache.get_many">
+<span class="sig-name descname"><span class="pre">get_many</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Iterable</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/cachelib/caches/multi_level_cache.html#MultiLevelCache.get_many"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cachelib.MultiLevelCache.get_many" title="Link to this definition">¶</a></dt>
+<dd><p>Retrieve the corresponding values for the given keys, if they exist.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>keys</strong> (<em>tuple</em><em>[</em><em>Hashable</em><em>]</em>) – The requested keys.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>The corresponding values to the</dt><dd><p>requested keys.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple[Any]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cachelib.MultiLevelCache.get_stats">
+<span class="sig-name descname"><span class="pre">get_stats</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#cachelib.MultiLevelCache.get_stats" title="Link to this definition">¶</a></dt>
+<dd><p>Get the cache’s stats.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The cache’s stats.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict[str, Any]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cachelib.MultiLevelCache.inspect">
+<span class="sig-name descname"><span class="pre">inspect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Hashable</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="_modules/cachelib/caches/multi_level_cache.html#MultiLevelCache.inspect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cachelib.MultiLevelCache.inspect" title="Link to this definition">¶</a></dt>
+<dd><p>Inspect the given key in the cache. Returns a dict with
+the key’s information.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>key</strong> (<em>Hashable</em>) – The requested key.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Return a dict with the key’s information.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict[str, Any]</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>KeyNotFoundError</strong> – When the given key is nonexistent.</p></li>
+<li><p><strong>KeyExpiredError</strong> – When the given key is expired.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cachelib.MultiLevelCache.keys">
+<span class="sig-name descname"><span class="pre">keys</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Hashable</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/cachelib/caches/multi_level_cache.html#MultiLevelCache.keys"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cachelib.MultiLevelCache.keys" title="Link to this definition">¶</a></dt>
+<dd><p>Get the cached keys.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The tuple with the cached keys.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>tuple[Hashable]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="cachelib.MultiLevelCache.max_memory">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">max_memory</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#cachelib.MultiLevelCache.max_memory" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="cachelib.MultiLevelCache.max_size">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">max_size</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#cachelib.MultiLevelCache.max_size" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cachelib.MultiLevelCache.memoize">
+<span class="sig-name descname"><span class="pre">memoize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ttl</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="reference internal" href="_modules/cachelib/caches/multi_level_cache.html#MultiLevelCache.memoize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cachelib.MultiLevelCache.memoize" title="Link to this definition">¶</a></dt>
+<dd><p>A decorator.</p>
+<p>Cache the return value of a function with its arguments.
+When the function gets called again with the same arguments,
+the cached result will get returned.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ttl</strong> (<em>Optional</em><em>[</em><em>Union</em><em>[</em><em>int</em><em>, </em><em>float</em><em>]</em><em>]</em>) – The ttl of every
+cached function result.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The cached or computed outcome of the function.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Any</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ReadOnlyError</strong> – When a function call gets stored While
+    read-only mode is enabled</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cachelib.MultiLevelCache.read_only">
+<span class="sig-name descname"><span class="pre">read_only</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cachelib.MultiLevelCache.read_only" title="Link to this definition">¶</a></dt>
+<dd><p>A context manager to enable read-only mode.
+The cache cannot be modified while read-only mode is enabled.</p>
+<dl>
+<dt>Usage:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">cache</span><span class="o">.</span><span class="n">read_only</span><span class="p">():</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">some</span> <span class="n">code</span> <span class="k">while</span> <span class="n">cache</span> <span class="ow">is</span> <span class="n">read</span><span class="o">-</span><span class="n">only</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ReadOnlyError</strong> – When there is an attempt to modify the cache
+    while read-only mode is enabled.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cachelib.MultiLevelCache.set">
+<span class="sig-name descname"><span class="pre">set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Hashable</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/cachelib/caches/multi_level_cache.html#MultiLevelCache.set"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cachelib.MultiLevelCache.set" title="Link to this definition">¶</a></dt>
+<dd><p>Set the value (and ttl) for the given key (if it doesn’t exist yet),
+update the value (and ttl) otherwise.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<em>Hashable</em>) – The key.</p></li>
+<li><p><strong>value</strong> (<em>Any</em>) – The node’s value.</p></li>
+<li><p><strong>ttl</strong> (<em>Optional</em><em>[</em><em>Union</em><em>[</em><em>int</em><em>, </em><em>float</em><em>]</em><em>]</em>) – The node’s ttl.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>CacheConfigurationError</strong> – When the given arguments aren’t valid.</p></li>
+<li><p><strong>ReadOnlyError</strong> – When cache.set() is called while
+    read-only mode is enabled.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cachelib.MultiLevelCache.set_read_only">
+<span class="sig-name descname"><span class="pre">set_read_only</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">read_only</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#cachelib.MultiLevelCache.set_read_only" title="Link to this definition">¶</a></dt>
+<dd><p>Enable or disable read-only mode manually.
+The cache cannot be modified while read-only mode
+is enabled. It is preferred to use cache.read_only() as
+a context manager.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>read_only</strong> (<em>bool</em>) – True to enable read-only mode,
+False to disable read-only mode.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<dl>
+<dt>Usage:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cache</span><span class="o">.</span><span class="n">set_read_only</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># Enable read-only mode</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="o">...</span> <span class="n">some</span> <span class="n">code</span> <span class="k">while</span> <span class="n">cache</span> <span class="ow">is</span> <span class="n">read</span><span class="o">-</span><span class="n">only</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cache</span><span class="o">.</span><span class="n">set_read_only</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># Disable read-only mode</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>CacheConfigurationError</strong> – When read_only isn’t a bool.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cachelib.MultiLevelCache.set_verbose">
+<span class="sig-name descname"><span class="pre">set_verbose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#cachelib.MultiLevelCache.set_verbose" title="Link to this definition">¶</a></dt>
+<dd><p>Enable or disable debug mode manually. While
+debug mode is enabled, debug logs will be shown.
+It is preferred to use cache.verbose() as
+a context manager.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>verbose</strong> (<em>bool</em>) – True to enable debug mode,
+False to disable debug mode.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<dl>
+<dt>Usage:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cache</span><span class="o">.</span><span class="n">set_verbose</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># Enable debug mode</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="o">...</span> <span class="n">some</span> <span class="n">code</span> <span class="k">with</span> <span class="n">debug</span> <span class="n">logs</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cache</span><span class="o">.</span><span class="n">set_verbose</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># Disable debug mode</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>CacheConfigurationError</strong> – When verbose isn’t a bool.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="cachelib.MultiLevelCache.stats">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">stats</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Stats</span></em><a class="headerlink" href="#cachelib.MultiLevelCache.stats" title="Link to this definition">¶</a></dt>
+<dd><p>read-only</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cachelib.MultiLevelCache.ttl">
+<span class="sig-name descname"><span class="pre">ttl</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Hashable</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="_modules/cachelib/caches/multi_level_cache.html#MultiLevelCache.ttl"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cachelib.MultiLevelCache.ttl" title="Link to this definition">¶</a></dt>
+<dd><p>Get the ttl (Time To Live) of the given key.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>key</strong> (<em>Hashable</em>) – The key.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The key’s ttl.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[Union[int, float]]</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>KeyNotFoundError</strong> – When the given key is nonexistent.</p></li>
+<li><p><strong>KeyExpiredError</strong> – When the given key is expired.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cachelib.MultiLevelCache.values">
+<span class="sig-name descname"><span class="pre">values</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/cachelib/caches/multi_level_cache.html#MultiLevelCache.values"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cachelib.MultiLevelCache.values" title="Link to this definition">¶</a></dt>
+<dd><p>Get the cached values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The tuple with the cached values.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>tuple[Any]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cachelib.MultiLevelCache.verbose">
+<span class="sig-name descname"><span class="pre">verbose</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cachelib.MultiLevelCache.verbose" title="Link to this definition">¶</a></dt>
+<dd><p>A context manager to enable debug mode. When debug
+mode is enabled, debug logs will be shown.</p>
+<dl>
+<dt>Usage:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">cache</span><span class="o">.</span><span class="n">verbose</span><span class="p">():</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">some</span> <span class="n">code</span> <span class="k">with</span> <span class="n">debug</span> <span class="n">logs</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="cachelib-eviction">
+<h2>cachelib.eviction<a class="headerlink" href="#cachelib-eviction" title="Link to this heading">¶</a></h2>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cachelib.eviction.LRU">
+<span class="sig-prename descclassname"><span class="pre">cachelib.eviction.</span></span><span class="sig-name descname"><span class="pre">LRU</span></span><a class="headerlink" href="#cachelib.eviction.LRU" title="Link to this definition">¶</a></dt>
+<dd><p>alias of &lt;_LRUEviction&gt;</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cachelib.eviction.LFU">
+<span class="sig-prename descclassname"><span class="pre">cachelib.eviction.</span></span><span class="sig-name descname"><span class="pre">LFU</span></span><a class="headerlink" href="#cachelib.eviction.LFU" title="Link to this definition">¶</a></dt>
+<dd><p>alias of &lt;_LFUEviction&gt;</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cachelib.eviction.FIFO">
+<span class="sig-prename descclassname"><span class="pre">cachelib.eviction.</span></span><span class="sig-name descname"><span class="pre">FIFO</span></span><a class="headerlink" href="#cachelib.eviction.FIFO" title="Link to this definition">¶</a></dt>
+<dd><p>alias of &lt;_FIFOEviction&gt;</p>
+</dd></dl>
+
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          <a class="prev-page" href="usage.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Usage Guide</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2025, Deetjepateeteke &lt;https://github.com/Deetjepateeteke&gt;
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">API Reference</a><ul>
+<li><a class="reference internal" href="#cachelib-memorycache">cachelib.MemoryCache</a><ul>
+<li><a class="reference internal" href="#cachelib.MemoryCache"><code class="docutils literal notranslate"><span class="pre">MemoryCache</span></code></a><ul>
+<li><a class="reference internal" href="#cachelib.MemoryCache.__contains__"><code class="docutils literal notranslate"><span class="pre">MemoryCache.__contains__()</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.MemoryCache.__delitem__"><code class="docutils literal notranslate"><span class="pre">MemoryCache.__delitem__()</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.MemoryCache.__getitem__"><code class="docutils literal notranslate"><span class="pre">MemoryCache.__getitem__()</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.MemoryCache.__len__"><code class="docutils literal notranslate"><span class="pre">MemoryCache.__len__()</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.MemoryCache.__setitem__"><code class="docutils literal notranslate"><span class="pre">MemoryCache.__setitem__()</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.MemoryCache.cache"><code class="docutils literal notranslate"><span class="pre">MemoryCache.cache</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.MemoryCache.clear"><code class="docutils literal notranslate"><span class="pre">MemoryCache.clear()</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.MemoryCache.delete"><code class="docutils literal notranslate"><span class="pre">MemoryCache.delete()</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.MemoryCache.get"><code class="docutils literal notranslate"><span class="pre">MemoryCache.get()</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.MemoryCache.get_many"><code class="docutils literal notranslate"><span class="pre">MemoryCache.get_many()</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.MemoryCache.get_stats"><code class="docutils literal notranslate"><span class="pre">MemoryCache.get_stats()</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.MemoryCache.inspect"><code class="docutils literal notranslate"><span class="pre">MemoryCache.inspect()</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.MemoryCache.keys"><code class="docutils literal notranslate"><span class="pre">MemoryCache.keys()</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.MemoryCache.load"><code class="docutils literal notranslate"><span class="pre">MemoryCache.load()</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.MemoryCache.max_memory"><code class="docutils literal notranslate"><span class="pre">MemoryCache.max_memory</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.MemoryCache.max_size"><code class="docutils literal notranslate"><span class="pre">MemoryCache.max_size</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.MemoryCache.memoize"><code class="docutils literal notranslate"><span class="pre">MemoryCache.memoize()</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.MemoryCache.read_only"><code class="docutils literal notranslate"><span class="pre">MemoryCache.read_only()</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.MemoryCache.save"><code class="docutils literal notranslate"><span class="pre">MemoryCache.save()</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.MemoryCache.set"><code class="docutils literal notranslate"><span class="pre">MemoryCache.set()</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.MemoryCache.set_read_only"><code class="docutils literal notranslate"><span class="pre">MemoryCache.set_read_only()</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.MemoryCache.set_verbose"><code class="docutils literal notranslate"><span class="pre">MemoryCache.set_verbose()</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.MemoryCache.stats"><code class="docutils literal notranslate"><span class="pre">MemoryCache.stats</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.MemoryCache.ttl"><code class="docutils literal notranslate"><span class="pre">MemoryCache.ttl()</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.MemoryCache.values"><code class="docutils literal notranslate"><span class="pre">MemoryCache.values()</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.MemoryCache.verbose"><code class="docutils literal notranslate"><span class="pre">MemoryCache.verbose()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#cachelib-diskcache">cachelib.DiskCache</a><ul>
+<li><a class="reference internal" href="#cachelib.DiskCache"><code class="docutils literal notranslate"><span class="pre">DiskCache</span></code></a><ul>
+<li><a class="reference internal" href="#cachelib.DiskCache.__contains__"><code class="docutils literal notranslate"><span class="pre">DiskCache.__contains__()</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.DiskCache.__delitem__"><code class="docutils literal notranslate"><span class="pre">DiskCache.__delitem__()</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.DiskCache.__getitem__"><code class="docutils literal notranslate"><span class="pre">DiskCache.__getitem__()</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.DiskCache.__len__"><code class="docutils literal notranslate"><span class="pre">DiskCache.__len__()</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.DiskCache.__setitem__"><code class="docutils literal notranslate"><span class="pre">DiskCache.__setitem__()</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.DiskCache.cache"><code class="docutils literal notranslate"><span class="pre">DiskCache.cache</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.DiskCache.clear"><code class="docutils literal notranslate"><span class="pre">DiskCache.clear()</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.DiskCache.close"><code class="docutils literal notranslate"><span class="pre">DiskCache.close()</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.DiskCache.delete"><code class="docutils literal notranslate"><span class="pre">DiskCache.delete()</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.DiskCache.get"><code class="docutils literal notranslate"><span class="pre">DiskCache.get()</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.DiskCache.get_many"><code class="docutils literal notranslate"><span class="pre">DiskCache.get_many()</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.DiskCache.get_stats"><code class="docutils literal notranslate"><span class="pre">DiskCache.get_stats()</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.DiskCache.inspect"><code class="docutils literal notranslate"><span class="pre">DiskCache.inspect()</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.DiskCache.keys"><code class="docutils literal notranslate"><span class="pre">DiskCache.keys()</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.DiskCache.max_memory"><code class="docutils literal notranslate"><span class="pre">DiskCache.max_memory</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.DiskCache.max_size"><code class="docutils literal notranslate"><span class="pre">DiskCache.max_size</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.DiskCache.memoize"><code class="docutils literal notranslate"><span class="pre">DiskCache.memoize()</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.DiskCache.read_only"><code class="docutils literal notranslate"><span class="pre">DiskCache.read_only()</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.DiskCache.set"><code class="docutils literal notranslate"><span class="pre">DiskCache.set()</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.DiskCache.set_read_only"><code class="docutils literal notranslate"><span class="pre">DiskCache.set_read_only()</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.DiskCache.set_verbose"><code class="docutils literal notranslate"><span class="pre">DiskCache.set_verbose()</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.DiskCache.stats"><code class="docutils literal notranslate"><span class="pre">DiskCache.stats</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.DiskCache.ttl"><code class="docutils literal notranslate"><span class="pre">DiskCache.ttl()</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.DiskCache.values"><code class="docutils literal notranslate"><span class="pre">DiskCache.values()</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.DiskCache.verbose"><code class="docutils literal notranslate"><span class="pre">DiskCache.verbose()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#cachelib-multilevelcache">cachelib.MultiLevelCache</a><ul>
+<li><a class="reference internal" href="#cachelib.MultiLevelCache"><code class="docutils literal notranslate"><span class="pre">MultiLevelCache</span></code></a><ul>
+<li><a class="reference internal" href="#cachelib.MultiLevelCache.__contains__"><code class="docutils literal notranslate"><span class="pre">MultiLevelCache.__contains__()</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.MultiLevelCache.__delitem__"><code class="docutils literal notranslate"><span class="pre">MultiLevelCache.__delitem__()</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.MultiLevelCache.__getitem__"><code class="docutils literal notranslate"><span class="pre">MultiLevelCache.__getitem__()</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.MultiLevelCache.__len__"><code class="docutils literal notranslate"><span class="pre">MultiLevelCache.__len__()</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.MultiLevelCache.__setitem__"><code class="docutils literal notranslate"><span class="pre">MultiLevelCache.__setitem__()</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.MultiLevelCache.cache"><code class="docutils literal notranslate"><span class="pre">MultiLevelCache.cache</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.MultiLevelCache.clear"><code class="docutils literal notranslate"><span class="pre">MultiLevelCache.clear()</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.MultiLevelCache.close"><code class="docutils literal notranslate"><span class="pre">MultiLevelCache.close()</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.MultiLevelCache.delete"><code class="docutils literal notranslate"><span class="pre">MultiLevelCache.delete()</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.MultiLevelCache.get"><code class="docutils literal notranslate"><span class="pre">MultiLevelCache.get()</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.MultiLevelCache.get_many"><code class="docutils literal notranslate"><span class="pre">MultiLevelCache.get_many()</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.MultiLevelCache.get_stats"><code class="docutils literal notranslate"><span class="pre">MultiLevelCache.get_stats()</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.MultiLevelCache.inspect"><code class="docutils literal notranslate"><span class="pre">MultiLevelCache.inspect()</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.MultiLevelCache.keys"><code class="docutils literal notranslate"><span class="pre">MultiLevelCache.keys()</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.MultiLevelCache.max_memory"><code class="docutils literal notranslate"><span class="pre">MultiLevelCache.max_memory</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.MultiLevelCache.max_size"><code class="docutils literal notranslate"><span class="pre">MultiLevelCache.max_size</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.MultiLevelCache.memoize"><code class="docutils literal notranslate"><span class="pre">MultiLevelCache.memoize()</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.MultiLevelCache.read_only"><code class="docutils literal notranslate"><span class="pre">MultiLevelCache.read_only()</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.MultiLevelCache.set"><code class="docutils literal notranslate"><span class="pre">MultiLevelCache.set()</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.MultiLevelCache.set_read_only"><code class="docutils literal notranslate"><span class="pre">MultiLevelCache.set_read_only()</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.MultiLevelCache.set_verbose"><code class="docutils literal notranslate"><span class="pre">MultiLevelCache.set_verbose()</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.MultiLevelCache.stats"><code class="docutils literal notranslate"><span class="pre">MultiLevelCache.stats</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.MultiLevelCache.ttl"><code class="docutils literal notranslate"><span class="pre">MultiLevelCache.ttl()</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.MultiLevelCache.values"><code class="docutils literal notranslate"><span class="pre">MultiLevelCache.values()</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.MultiLevelCache.verbose"><code class="docutils literal notranslate"><span class="pre">MultiLevelCache.verbose()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#cachelib-eviction">cachelib.eviction</a><ul>
+<li><a class="reference internal" href="#cachelib.eviction.LRU"><code class="docutils literal notranslate"><span class="pre">LRU</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.eviction.LFU"><code class="docutils literal notranslate"><span class="pre">LFU</span></code></a></li>
+<li><a class="reference internal" href="#cachelib.eviction.FIFO"><code class="docutils literal notranslate"><span class="pre">FIFO</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="_static/documentation_options.js?v=8e576371"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/scripts/furo.js?v=46bd48cc"></script>
+    </body>
+</html>
