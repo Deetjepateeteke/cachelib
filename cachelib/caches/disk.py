@@ -37,7 +37,7 @@ class DiskCache(BaseCache):
     """
 
     # SQL queries
-    CACHE_CREATION_QUERY: Final = """
+    _CACHE_CREATION_QUERY: Final = """
         CREATE TABLE IF NOT EXISTS cache (
             key TEXT PRIMARY KEY,
             value BLOB,
@@ -47,42 +47,42 @@ class DiskCache(BaseCache):
             access_frequency INTEGER DEFAULT 0
         );
     """
-    SET_QUERY: Final = """
+    _SET_QUERY: Final = """
         INSERT INTO cache
         (key, value, ttl, expires_at, last_accessed)
         VALUES (?, ?, ?, ?, ?);
     """
-    UPDATE_QUERY: Final = """
+    _UPDATE_QUERY: Final = """
         UPDATE cache
         SET value=?, ttl=?, expires_at=?
         WHERE key=?;
     """
-    GET_QUERY: Final = """
+    _GET_QUERY: Final = """
         SELECT value, ttl, expires_at
         FROM cache
         WHERE key=?;
     """
-    DELETE_QUERY: Final = """
+    _DELETE_QUERY: Final = """
         DELETE FROM cache
         WHERE key=?;
     """
-    CLEAR_QUERY: Final = """
+    _CLEAR_QUERY: Final = """
         DELETE FROM cache;
     """
-    UPDATE_STATE_QUERY: Final = """
+    _UPDATE_STATE_QUERY: Final = """
         UPDATE cache
         SET expires_at=?, last_accessed=?, access_frequency=access_frequency + 1
         WHERE key=?;
     """
-    KEYS_QUERY: Final = """
+    _KEYS_QUERY: Final = """
         SELECT key
         FROM cache;
     """
-    VALUES_QUERY: Final = """
+    _VALUES_QUERY: Final = """
         SELECT value
         FROM cache;
     """
-    LEN_QUERY: Final = """
+    _LEN_QUERY: Final = """
         SELECT COUNT(key)
         FROM cache;"""
 
@@ -136,7 +136,7 @@ class DiskCache(BaseCache):
 
     def _create_sql_backend(self) -> None:
         with self._get_cursor() as cursor:
-            cursor.execute(self.CACHE_CREATION_QUERY)
+            cursor.execute(self._CACHE_CREATION_QUERY)
 
     @staticmethod
     def _create_node(key: Hashable,
@@ -156,7 +156,7 @@ class DiskCache(BaseCache):
 
         with self._get_cursor() as cursor:
             expires_at = None if ttl is None else time.time() + ttl
-            cursor.execute(self.SET_QUERY, (key, value, ttl, expires_at, time.time()))
+            cursor.execute(self._SET_QUERY, (key, value, ttl, expires_at, time.time()))
 
         return self._create_node(key, value, ttl, expires_at)
 
@@ -173,14 +173,14 @@ class DiskCache(BaseCache):
         expires_at = None if ttl is None else time.time() + ttl
 
         with self._get_cursor() as cursor:
-            cursor.execute(self.UPDATE_QUERY, (value, ttl, expires_at, node.key))
+            cursor.execute(self._UPDATE_QUERY, (value, ttl, expires_at, node.key))
 
         return self._create_node(node.key, value, ttl, expires_at)
 
     def _get_node(self, key: Hashable) -> Node:
 
         with self._get_cursor() as cursor:
-            cursor.execute(self.GET_QUERY, (key,))
+            cursor.execute(self._GET_QUERY, (key,))
 
             try:
                 value, ttl, expires_at = cursor.fetchone()
@@ -191,13 +191,13 @@ class DiskCache(BaseCache):
 
     def _remove_node(self, node: Node) -> None:
         with self._get_cursor() as cursor:
-            cursor.execute(self.DELETE_QUERY, (node.key,))
+            cursor.execute(self._DELETE_QUERY, (node.key,))
 
     def _move_to_top(self, node: Node) -> None:
         with self._get_cursor() as cursor:
             if self._eviction_policy is LFU or self._eviction_policy is LRU:
                 expires_at = None if node.ttl is None else time.time() + node.ttl
-                cursor.execute(self.UPDATE_STATE_QUERY, (expires_at, time.time(), node.key))
+                cursor.execute(self._UPDATE_STATE_QUERY, (expires_at, time.time(), node.key))
 
     def _get_cache_size(self) -> int:
         return self._path.stat().st_size
@@ -207,7 +207,7 @@ class DiskCache(BaseCache):
             # Do not allow changes while read-only is enabled
             if not self._read_only:
                 with self._get_cursor() as cursor:
-                    cursor.execute(self.CLEAR_QUERY)
+                    cursor.execute(self._CLEAR_QUERY)
 
                 self.logger.debug("CLEAR CACHE")
             else:
@@ -215,13 +215,13 @@ class DiskCache(BaseCache):
 
     def keys(self) -> tuple[Hashable]:
         with self._get_cursor() as cursor:
-            cursor.execute(self.KEYS_QUERY)
+            cursor.execute(self._KEYS_QUERY)
             keys = cursor.fetchall()
             return tuple([key[0] for key in keys])
 
     def values(self) -> tuple[Any]:
         with self._get_cursor() as cursor:
-            cursor.execute(self.VALUES_QUERY)
+            cursor.execute(self._VALUES_QUERY)
             values = cursor.fetchall()
             return tuple([value[0] for value in values])
 
@@ -236,7 +236,7 @@ class DiskCache(BaseCache):
 
     def __len__(self) -> int:
         with self._get_cursor() as cursor:
-            cursor.execute(self.LEN_QUERY)
+            cursor.execute(self._LEN_QUERY)
             return cursor.fetchone()[0]
 
     def _lru_eviction(self) -> Node:

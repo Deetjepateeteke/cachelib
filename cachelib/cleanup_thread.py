@@ -126,10 +126,10 @@ class DiskCleanupThread(CleanupThread):
                     expired_nodes = []  # List with the expired nodes that will get evicted
 
                     # Check for expired nodes
-                    cached_keys = cursor.execute(self._cache.KEYS_QUERY).fetchall()
+                    cached_keys = cursor.execute(self._cache._KEYS_QUERY).fetchall()
                     for key in cached_keys:
                         key = key[0]
-                        value, ttl, expires_at = cursor.execute(self._cache.GET_QUERY, (key,)).fetchone()
+                        value, ttl, expires_at = cursor.execute(self._cache._GET_QUERY, (key,)).fetchone()
 
                         node = Node(key, value, ttl)
                         node._expires_at = expires_at
@@ -139,7 +139,7 @@ class DiskCleanupThread(CleanupThread):
 
                     # Evict the found expired nodes
                     for node in expired_nodes:
-                        cursor.execute(self._cache.DELETE_QUERY, (node.key,))
+                        cursor.execute(self._cache._DELETE_QUERY, (node.key,))
 
                         self._cache._stats._evictions += 1
                         self._cache.logger.debug(f"EVICT key='{node.key}' due to ttl")
