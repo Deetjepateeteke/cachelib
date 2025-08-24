@@ -55,6 +55,26 @@ cache.set("foo2", "bar2")  # Won't expire
 
 Here, instead of assigning a global TTL, the first item has been given a TTL, while the second uses the global TTL. Since the global TTL defaults to `None`, meaning an unlimited time to live, the second item won't expire.
 
+## Max-size and max-memory
+
+**Max-size** and **max-memory** are arguments that control the capacity of the cache. Once one of those gets exceeded, occupied space needs to be freed up by evicting items in the cache.
+
+```python
+# To create a cache with a max-size of 5
+cache = cachelib.MemoryCache(max_size=5)
+```
+
+This creates a cache that can hold 5 key/value pairs.
+
+```python
+# To create a cache with a max-memory of 256mb
+cache = cachelib.MemoryCache(max_memory="256mb")
+```
+
+This creates a cache that can hold up to 256mb of data.
+
+When using max_memory, the supported units are: b, kb, mb, gb, tb. Or you can just assign it an integer value to let it default to bytes.
+
 ## Eviction Policies
 
 When the **max-size** of a cache gets exceeded, space needs to be freed up for other items to get added to the cache. This is where eviction policies come in.
@@ -110,7 +130,30 @@ assert "b" not in cache
 
 In this example, `cache.get("a")` is called 5 times, which makes it the most frequently accessed. When "c" is added to the cache, the max-size gets exceeded and "b" gets evicted.
 
+> [!INFO] Items equally accessed
 > When there are two items accessed an equal amount of times, the item to evict will be decided by LRU based eviction.
+
+### FIFO (First In, First Out)
+
+```python
+import cachelib
+from cachelib.eviction import FIFO
+
+cache = MemoryCache(max_size=2, eviction_policy=FIFO)
+```
+
+Here, **FIFO (First In, First Out)** is used as the eviction policy. When the cache's max-size gets exceeded, the item that got added first gets deleted.
+
+```python
+cache.set("a", 1)  # First added
+cache.set("b", 2)
+
+cache.set("c", 3)
+
+assert "a" not in cache
+```
+
+In this example, "a" got added first to the cache and thus it will be the first item to get evicted.
 
 ## Cache backends
 
@@ -185,8 +228,8 @@ cache = MultiLevelCache(
 This creates a multi-level cache existing of two MemoryCaches and one DiskCache. When the first cache is full, the evicted items will be transferred to the second cache and if that one is also full, the evicted items will be transferred to the DiskCache before getting removed for good.
 
 `Inclusivity` can either be **"inclusive"** or **"exclusive"**:
-    **"inclusive"**: when an item gets added to the cache, it gets added to every cache in the multi-level cache.
-    **"exclusive"**: when an item gets added to the cache, it only gets added to the first cache.
+    - **"inclusive"**: when an item gets added to the cache, it gets added to every cache in the multi-level cache.
+    - **"exclusive"**: when an item gets added to the cache, it only gets added to the first cache.
 
 The different caches in a multi-level cache are defined as `cache.l1`, `cache.l2` and `cache.l3`. Whenever `cache.get(key)` is called, the cache tries to find the key in its L1 cache first. If it isn't found there, it looks for it in its L2 cache and then its L3 cache.
 

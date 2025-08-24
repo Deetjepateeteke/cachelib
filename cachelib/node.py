@@ -123,7 +123,7 @@ class Node:
         """
         Examples:
             >>> repr(Node)
-            NodeLRU(key='foo', value='bar', ttl=5s, prev='some_node', next='some_other_node')
+            <Node(key='foo', value='bar', ttl=5s, prev='some_node', next='some_other_node')>
         """
         return (
             f"<{self.__class__.__name__}(key={self.key!r}, value={self.value!r}, "

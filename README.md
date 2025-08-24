@@ -20,7 +20,7 @@ cd cachelib
 - In-memory cache and on-disk cache
 - Multi-level cache (L1, L2, L3)
 - TTL support
-- LRU/LFU eviction
+- LRU/LFU/FIFO eviction
 - Thread-safe
 
 ## Usage
