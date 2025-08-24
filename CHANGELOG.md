@@ -2,12 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+## [0.5.2] - 2025-24-08
 
-- FIFO eviction
-- `LazyCache`
-- Namespace table in `SQL`
-- Docs
+### Added
+
+- Added FIFO eviction
+- Added docs using sphinx
+- Configured GitHub workflows to build and deploy docs
+- Configured GitHub workflows to run tests
 
 ## [0.5.1] - 2025-08-20
 

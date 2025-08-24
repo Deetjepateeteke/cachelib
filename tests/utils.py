@@ -25,11 +25,17 @@ def create_lru_memory_cache():
 def create_lfu_memory_cache():
     return MemoryCache(eviction_policy=eviction.LFU, max_size=2)
 
+def create_fifo_memory_cache():
+    return MemoryCache(eviction_policy=eviction.FIFO, max_size=2)
+
 def create_lru_disk_cache():
     return DiskCache(PATH, eviction_policy=eviction.LRU, max_size=2)
 
 def create_lfu_disk_cache():
     return DiskCache(PATH, eviction_policy=eviction.LFU, max_size=2)
+
+def create_fifo_disk_cache():
+    return DiskCache(path=PATH, eviction_policy=eviction.FIFO, max_size=2)
 
 
 def create_multi_level_cache(inclusivity: str) -> MultiLevelCache:

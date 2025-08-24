@@ -12,7 +12,7 @@ Usage:
 Author: Deetjepateeteke <https://github.com/Deetjepateeteke>
 """
 
-__all__ = ["EvictionPolicy", "LRU", "LFU"]
+__all__ = ["EvictionPolicy", "FIFO", "LRU", "LFU"]
 
 
 class EvictionPolicy():  # The master eviction policy class
@@ -24,7 +24,9 @@ class EvictionPolicy():  # The master eviction policy class
 
 class _LRUEviction(EvictionPolicy): __slots__ = ()
 class _LFUEviction(EvictionPolicy): __slots__ = ()
+class _FIFOEviction(EvictionPolicy): __slots__ = ()
 
 
 LRU: EvictionPolicy = _LRUEviction()
 LFU: EvictionPolicy = _LFUEviction()
+FIFO: EvictionPolicy = _FIFOEviction()

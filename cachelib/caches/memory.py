@@ -24,7 +24,7 @@ from ..errors import (
     KeyNotFoundError,
     ReadOnlyError
 )
-from ..eviction import EvictionPolicy, _LFUEviction
+from ..eviction import EvictionPolicy, _LFUEviction, LRU, LFU
 from ..node import Node
 from ..utils import NullValue
 
@@ -73,7 +73,7 @@ class MemoryCache(BaseCache):
 
         self._cache: dict[Hashable, Any] = {}
 
-        if isinstance(self._eviction_policy, _LFUEviction):
+        if self._eviction_policy is LFU:
             # Used to hold track of access frequency in LFU
             self._access_freq: dict[Hashable, int] = {}
 
@@ -143,17 +143,17 @@ class MemoryCache(BaseCache):
                 node.next.prev = node.prev
                 node.prev = node.next = None
 
-            if isinstance(self._eviction_policy, _LFUEviction):
+            if self._eviction_policy is LFU:
                 del self._access_freq[node.key]
 
     def _move_to_top(self, node: Node) -> None:
         with self._lock:
             # Update the node's access frequency
-            if isinstance(self._eviction_policy, _LFUEviction):
+            if self._eviction_policy is LFU:
                 self._access_freq[node.key] += 1
 
             # Place the node at the start of the linked list
-            if isinstance(self._eviction_policy, EvictionPolicy):
+            if self._eviction_policy is LFU or self._eviction_policy is LRU:
                 # Remove node
                 node.prev.next = node.next
                 node.next.prev = node.prev
@@ -177,7 +177,7 @@ class MemoryCache(BaseCache):
             if not self._read_only:
                 self._cache = {}
 
-                if isinstance(self._eviction_policy, _LFUEviction):
+                if self._eviction_policy is LFU:
                     self._access_freq = {}
 
                 self._head = self._tail = Node(None, None)
@@ -302,6 +302,18 @@ class MemoryCache(BaseCache):
 
                 return current_node
             return self._get_node(least_freq_keys[0])
+        
+    def _fifo_eviction(self) -> Node:
+        """
+        FIFO (First In, First Out) eviction
+        This is the eviction method called when eviction_policy=cachelib.eviction.FIFO.
+        """
+        with self._lock:
+            current_node = self._tail.prev
+            while current_node.is_expired():
+                current_node = current_node.prev
+
+            return current_node            
 
     @staticmethod
     def _create_cache_key(key):

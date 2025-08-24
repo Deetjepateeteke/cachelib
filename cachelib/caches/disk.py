@@ -23,7 +23,7 @@ from ..errors import (
     KeyNotFoundError,
     ReadOnlyError
 )
-from ..eviction import EvictionPolicy
+from ..eviction import EvictionPolicy, LRU, LFU
 from ..node import Node
 from ..utils import create_json_cache_key, NullValue
 
@@ -195,8 +195,9 @@ class DiskCache(BaseCache):
 
     def _move_to_top(self, node: Node) -> None:
         with self._get_cursor() as cursor:
-            expires_at = None if node.ttl is None else time.time() + node.ttl
-            cursor.execute(self.UPDATE_STATE_QUERY, (expires_at, time.time(), node.key))
+            if self._eviction_policy is LFU or self._eviction_policy is LRU:
+                expires_at = None if node.ttl is None else time.time() + node.ttl
+                cursor.execute(self.UPDATE_STATE_QUERY, (expires_at, time.time(), node.key))
 
     def _get_cache_size(self) -> int:
         return self._path.stat().st_size
@@ -281,6 +282,25 @@ class DiskCache(BaseCache):
 
                     return self._create_node(key, value, ttl, expires_at)
         return get_least_frequently_used_node()
+    
+    def _fifo_eviction(self) -> Node:
+        with self._lock:
+            query = """
+                SELECT key, value, ttl, expires_at
+                FROM cache
+                WHERE last_accessed = (
+                    SELECT MIN(last_accessed)
+                    FROM cache
+                    WHERE expires_at > ? OR expires_at IS NULL
+                )
+                LIMIT 1;
+            """
+
+            with self._get_cursor() as cursor:
+                cursor.execute(query, (time.time(),))
+                key, value, ttl, expires_at = cursor.fetchone()
+
+            return self._create_node(key, value, ttl, expires_at)
 
     @contextmanager
     def _get_cursor(self):

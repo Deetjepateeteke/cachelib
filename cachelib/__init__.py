@@ -18,6 +18,6 @@ __all__ = [
     "MemoryCache",
     "MultiLevelCache"
 ]
-__version__ = "0.5.1"
+__version__ = "0.5.2"
 __author__ = "Deetjepateeteke <https://github.com/Deetjepateeteke>"
 __license__ = "MIT"

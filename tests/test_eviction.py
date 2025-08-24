@@ -22,6 +22,8 @@ from tests.utils import (
     create_lfu_memory_cache,
     create_lru_disk_cache,
     create_lru_memory_cache,
+    create_fifo_memory_cache,
+    create_fifo_disk_cache,
     teardown_cache
 )
 
@@ -77,3 +79,28 @@ def test_lfu_eviction(create_lfu_cache):
     finally:
         if isinstance(lfu_cache, DiskCache):
             teardown_cache(lfu_cache)
+
+
+@pytest.mark.parametrize("create_fifo_cache", [create_fifo_memory_cache, create_fifo_disk_cache])
+def test_fifo_eviction(create_fifo_cache):
+    fifo_cache = create_fifo_cache()
+
+    try:
+        fifo_cache.set("key", "value")  # First added
+        fifo_cache.set("k", "v")
+
+        fifo_cache.get("key")
+
+        fifo_cache.max_size = 1
+
+        assert "key" not in fifo_cache
+        assert "k" in fifo_cache
+
+        fifo_cache.set("key", "value")
+
+        assert "k" not in fifo_cache
+        assert "key" in fifo_cache
+
+    finally:
+        if isinstance(fifo_cache, DiskCache):
+            teardown_cache(fifo_cache)

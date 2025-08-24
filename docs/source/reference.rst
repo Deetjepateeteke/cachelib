@@ -24,3 +24,4 @@ cachelib.eviction
 -------------------------------
 .. autoclass:: cachelib.eviction.LRU
 .. autoclass:: cachelib.eviction.LFU
+.. autoclass:: cachelib.eviction.FIFO

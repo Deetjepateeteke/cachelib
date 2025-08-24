@@ -110,7 +110,6 @@ assert "b" not in cache
 
 In this example, `cache.get("a")` is called 5 times, which makes it the most frequently accessed. When "c" is added to the cache, the max-size gets exceeded and "b" gets evicted.
 
-> [!INFO] Items equally accessed
 > When there are two items accessed an equal amount of times, the item to evict will be decided by LRU based eviction.
 
 ## Cache backends

@@ -34,7 +34,7 @@ from ..errors import (
     ReadOnlyError,
     SerializationError
 )
-from ..eviction import EvictionPolicy, _LFUEviction, _LRUEviction
+from ..eviction import EvictionPolicy, FIFO, LFU, LRU
 from ..node import Node
 from ..utils import extract_items_from_args, NullContext, NullValue
 
@@ -183,10 +183,12 @@ class BaseCache(ABC):
             Node: The node to evict.
         """
         with self._lock:
-            if isinstance(self._eviction_policy, _LFUEviction):
+            if self._eviction_policy is LFU:
                 return self._lfu_eviction()
-            elif isinstance(self._eviction_policy, _LRUEviction):
+            elif self._eviction_policy is LRU:
                 return self._lru_eviction()
+            elif self._eviction_policy is FIFO:
+                return self._fifo_eviction()
             else:
                 raise CacheOverflowError(max_size=self._max_size)
 
