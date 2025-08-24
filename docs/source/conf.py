@@ -30,6 +30,12 @@ extensions = [
 templates_path = ['_templates']
 exclude_patterns = []
 
+autodoc_default_options = {
+    'members': True,
+    'inherited-members': True,
+    'show-inheritance': True
+}
+
 
 
 # -- Options for HTML output -------------------------------------------------
